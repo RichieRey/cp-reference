@@ -1,0 +1,25 @@
+{
+  "name": "SafeID CP Reference",
+  "short_name": "CP Reference",
+  "description": "CheckPoint Command Reference - SafeID SAS",
+  "start_url": "/cp-reference/",
+  "scope": "/cp-reference/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f1824",
+  "theme_color": "#1D3457",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
