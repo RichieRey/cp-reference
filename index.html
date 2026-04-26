@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,192 +10,280 @@
 <meta name="apple-mobile-web-app-title" content="CP Reference">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap');
 
-  :root {
-    --gold:        #C8922A;
-    --gold-light:  #E0A93A;
-    --gold-dim:    rgba(200,146,42,0.15);
-    --gold-border: rgba(200,146,42,0.3);
-    --navy:        #1D3457;
-    --navy-dark:   #132440;
-    --navy-mid:    #243e67;
-    --bg:      #0f1824;
-    --surface: #162033;
-    --card:    #1a273d;
-    --border:  #243045;
-    --text:    #e8edf5;
-    --muted:   #6b82a0;
-    --green:   #4CAF7D;
-    --red:     #e05c5c;
-  }
+/* ══ THEME VARS ══ */
+[data-theme="dark"] {
+  --bg:          #0f1824;
+  --surface:     #162033;
+  --card:        #1a273d;
+  --card-hover:  #1f2f47;
+  --border:      #243045;
+  --text:        #e8edf5;
+  --text-dim:    #8fa3be;
+  --muted:       #6b82a0;
+  --gold:        #C8922A;
+  --gold-light:  #E0A93A;
+  --gold-dim:    rgba(200,146,42,0.15);
+  --gold-border: rgba(200,146,42,0.3);
+  --navy:        #1D3457;
+  --navy-dark:   #132440;
+  --navy-mid:    #243e67;
+  --green:       #4CAF7D;
+  --red:         #e05c5c;
+  --shadow:      rgba(0,0,0,0.4);
+}
+[data-theme="light"] {
+  --bg:          #f0f4f8;
+  --surface:     #ffffff;
+  --card:        #ffffff;
+  --card-hover:  #f7f9fc;
+  --border:      #d0dae8;
+  --text:        #1a2535;
+  --text-dim:    #4a6080;
+  --muted:       #7a90a8;
+  --gold:        #b07818;
+  --gold-light:  #c88a20;
+  --gold-dim:    rgba(176,120,24,0.1);
+  --gold-border: rgba(176,120,24,0.25);
+  --navy:        #1D3457;
+  --navy-dark:   #132440;
+  --navy-mid:    #243e67;
+  --green:       #2e8a5a;
+  --red:         #c0392b;
+  --shadow:      rgba(0,0,0,0.12);
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; transition: background 0.2s, color 0.2s; }
 
-  /* ── HEADER ── */
-  .header {
-    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
-    border-bottom: 2px solid var(--gold);
-    padding: 18px 28px 14px;
-    position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-  }
-  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
-  .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-mark { font-size: 21px; font-weight: 800; letter-spacing: -0.5px; }
-  .logo-mark .safe { color: #fff; }
-  .logo-mark .id   { color: var(--gold); }
-  .logo-sub { font-size: 9px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; }
-  .logo-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.15); }
-  .logo-module { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.6); letter-spacing: 1px; text-transform: uppercase; }
-  .logo-module span { color: var(--gold); font-weight: 700; }
+/* ══ HEADER ══ */
+.header {
+  background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+  border-bottom: 2px solid var(--gold);
+  padding: 16px 24px 14px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 4px 24px var(--shadow);
+}
+.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-mark { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+.logo-mark .safe { color: #fff; }
+.logo-mark .id   { color: var(--gold); }
+.logo-sub { font-size: 9px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; }
+.logo-divider { width: 1px; height: 30px; background: rgba(255,255,255,0.15); }
+.logo-module { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.6); letter-spacing: 1px; text-transform: uppercase; }
+.logo-module span { color: var(--gold); font-weight: 700; }
 
-  /* ── AUTH ── */
-  .auth-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .auth-status { font-family: 'JetBrains Mono', monospace; font-size: 10px; display: flex; align-items: center; gap: 6px; }
-  .auth-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.3s; }
-  .auth-dot.connected { background: var(--green); box-shadow: 0 0 6px var(--green); }
-  .auth-dot.syncing { background: var(--gold); animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .auth-label { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
-  .auth-label.connected { color: var(--green); }
-  .btn-auth { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; cursor: pointer; border-radius: 8px; padding: 6px 14px; border: 1px solid; transition: all 0.18s; letter-spacing: 0.5px; text-transform: uppercase; }
-  .btn-signin  { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
-  .btn-signin:hover  { background: rgba(200,146,42,0.25); border-color: var(--gold); }
-  .btn-signout { background: rgba(224,92,92,0.08); border-color: rgba(224,92,92,0.2); color: var(--red); }
-  .btn-signout:hover { background: rgba(224,92,92,0.18); border-color: var(--red); }
+/* ══ HEADER CONTROLS ══ */
+.header-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.auth-status { display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+.auth-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: all 0.3s; }
+.auth-dot.connected { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.auth-dot.syncing   { background: var(--gold); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.auth-label { color: rgba(255,255,255,0.6); }
+.auth-label.connected { color: var(--green); }
 
-  /* ── SEARCH ── */
-  .search-wrap { position: relative; }
-  .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 13px; }
-  #searchInput { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 9px 13px 9px 38px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-  #searchInput:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
-  #searchInput::placeholder { color: var(--muted); }
+.icon-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 6px 10px; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 14px; transition: all 0.18s; display: flex; align-items: center; gap: 5px; }
+.icon-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.icon-btn.active { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
 
-  /* ── NAV ── */
-  .nav-wrap { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; }
-  .nav-tabs { display: flex; gap: 2px; padding: 0 28px; overflow-x: auto; scrollbar-width: none; flex: 1; }
-  .nav-tabs::-webkit-scrollbar { display: none; }
-  .nav-tab { padding: 11px 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; border: none; background: transparent; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
-  .nav-tab:hover { color: var(--text); }
-  .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
-  .nav-add-cat { padding: 8px 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer; border: none; background: transparent; color: var(--green); white-space: nowrap; border-left: 1px solid var(--border); transition: color 0.2s; }
-  .nav-add-cat:hover { color: #6ee9a0; }
+.btn-auth { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; cursor: pointer; border-radius: 8px; padding: 6px 12px; border: 1px solid; transition: all 0.18s; letter-spacing: 0.5px; text-transform: uppercase; }
+.btn-signin  { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
+.btn-signin:hover  { background: rgba(200,146,42,0.25); }
+.btn-signout { background: rgba(224,92,92,0.08); border-color: rgba(224,92,92,0.2); color: var(--red); }
+.btn-signout:hover { background: rgba(224,92,92,0.18); }
+.btn-install { background: rgba(76,175,125,0.15); border-color: rgba(76,175,125,0.3); color: var(--green); display: none; }
+.btn-install:hover { background: rgba(76,175,125,0.25); }
 
-  /* ── MAIN ── */
-  .main { padding: 24px 28px; max-width: 1100px; margin: 0 auto; }
+/* ══ SEARCH ══ */
+.search-row { display: flex; gap: 8px; align-items: center; }
+.search-wrap { position: relative; flex: 1; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); pointer-events: none; font-size: 13px; }
+.search-shortcut { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.3); pointer-events: none; }
+#searchInput { width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 9px 60px 9px 36px; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; outline: none; transition: all 0.2s; }
+#searchInput:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); background: rgba(255,255,255,0.1); }
+#searchInput::placeholder { color: rgba(255,255,255,0.35); }
 
-  /* ── LOADING / OFFLINE STATES ── */
-  .state-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; }
-  .state-icon { font-size: 48px; margin-bottom: 16px; }
-  .state-title { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 8px; }
-  .state-desc { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; line-height: 1.7; margin-bottom: 24px; }
+/* Filter pills */
+.filter-row { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+.filter-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; }
+.filter-pill { font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+.filter-pill:hover { border-color: var(--gold-border); color: var(--gold); }
+.filter-pill.active { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
+.filter-pill.version { border-color: rgba(76,175,125,0.2); }
+.filter-pill.version.active { background: rgba(76,175,125,0.12); border-color: var(--green); color: var(--green); }
 
-  /* ── SECTION ── */
-  #appContent { display: none; }
-  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
-  .section-header-left { display: flex; align-items: center; gap: 12px; }
-  .section-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; background: var(--gold-dim); border: 1px solid var(--gold-border); }
-  .section-title { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; color: #fff; }
-  .section-desc { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 3px; }
-  .section-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+/* ══ NAV ══ */
+.nav-wrap { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; transition: background 0.2s; }
+.nav-tabs { display: flex; gap: 0; padding: 0 24px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab { padding: 11px 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; border: none; background: transparent; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.nav-actions { display: flex; border-left: 1px solid var(--border); }
+.nav-btn { padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer; border: none; background: transparent; color: var(--muted); white-space: nowrap; transition: color 0.2s; }
+.nav-btn:hover { color: var(--text); }
+.nav-btn.green { color: var(--green); }
+.nav-btn.green:hover { color: #6ee9a0; }
 
-  /* ── CMD CARDS ── */
-  .cmd-grid { display: grid; gap: 7px; margin-bottom: 24px; }
-  .cmd-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 15px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; transition: all 0.18s; position: relative; overflow: hidden; }
-  .cmd-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 10px 0 0 10px; background: var(--gold); opacity: 0; transition: opacity 0.18s; }
-  .cmd-card:hover { border-color: var(--gold-border); background: #1f2f47; transform: translateX(2px); }
-  .cmd-card:hover::before { opacity: 1; }
-  .cmd-text { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--gold-light); font-weight: 500; word-break: break-all; line-height: 1.6; margin-bottom: 4px; white-space: pre-wrap; }
-  .cmd-desc { font-size: 12px; color: #8fa3be; line-height: 1.5; }
-  .cmd-ref { display: inline-block; font-size: 9px; font-family: 'JetBrains Mono', monospace; background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-border); border-radius: 4px; padding: 1px 6px; margin-top: 5px; }
-  .cmd-notes { font-size: 11px; color: #6b82a0; font-style: italic; margin-top: 6px; padding: 6px 10px; background: rgba(255,255,255,0.03); border-left: 2px solid var(--border); border-radius: 0 4px 4px 0; line-height: 1.5; white-space: pre-wrap; }
+/* ══ MAIN ══ */
+.main { padding: 20px 24px; max-width: 1100px; margin: 0 auto; }
 
-  /* ── CARD ACTIONS ── */
-  .card-actions { display: flex; gap: 5px; align-items: flex-start; flex-shrink: 0; }
-  .copy-btn, .del-btn, .edit-btn { font-family: 'JetBrains Mono', monospace; font-size: 10px; cursor: pointer; border-radius: 6px; padding: 5px 10px; font-weight: 600; border: 1px solid; transition: all 0.18s; white-space: nowrap; }
-  .copy-btn { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
-  .copy-btn:hover { background: rgba(200,146,42,0.25); border-color: var(--gold); }
-  .copy-btn.copied { background: rgba(76,175,125,0.15); border-color: var(--green); color: var(--green); }
-  .del-btn { background: rgba(224,92,92,0.08); border-color: rgba(224,92,92,0.2); color: var(--red); }
-  .del-btn:hover { background: rgba(224,92,92,0.18); border-color: var(--red); }
-  .edit-btn { background: rgba(200,146,42,0.08); border-color: rgba(200,146,42,0.15); color: var(--muted); }
-  .edit-btn:hover { color: var(--gold); border-color: var(--gold-border); }
+/* ══ STATES ══ */
+.state-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; }
+.state-icon { font-size: 48px; margin-bottom: 16px; }
+.state-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.state-desc { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; line-height: 1.7; margin-bottom: 24px; }
+#appContent { display: none; }
 
-  /* ── SK CARDS ── */
-  .sk-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; gap: 14px; transition: all 0.18s; text-decoration: none; color: inherit; margin-bottom: 7px; }
-  .sk-card:hover { border-color: var(--gold-border); background: #1f2f47; }
-  .sk-id { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--gold); }
-  .sk-desc { font-size: 12px; color: #8fa3be; margin-top: 3px; }
-  .sk-arrow { color: var(--muted); font-size: 16px; flex-shrink: 0; }
+/* ══ SECTION HEADER ══ */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+.section-header-left { display: flex; align-items: center; gap: 12px; }
+.section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; background: var(--gold-dim); border: 1px solid var(--gold-border); }
+.section-title { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
+.section-meta { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.section-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
-  /* ── ADD CMD FORM ── */
-  .add-form { background: var(--card); border: 1px solid rgba(76,175,125,0.25); border-radius: 12px; padding: 18px; margin-bottom: 20px; }
-  .add-form-title { font-size: 12px; font-weight: 700; color: var(--green); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
-  .form-group { display: flex; flex-direction: column; gap: 5px; }
-  .form-label { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; text-transform: uppercase; }
-  .form-input, .form-select, .form-textarea { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 12px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; }
-  .form-textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
-  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(76,175,125,0.1); }
-  .form-select option { background: var(--surface); }
-  .form-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+/* ══ VIEW TOGGLE ══ */
+.view-toggle { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.view-btn { padding: 5px 10px; font-size: 13px; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all 0.18s; }
+.view-btn.active { background: var(--gold-dim); color: var(--gold); }
 
-  /* ── BUTTONS ── */
-  .btn { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; padding: 8px 16px; border: 1px solid; transition: all 0.18s; letter-spacing: 0.5px; text-transform: uppercase; }
-  .btn-green { background: rgba(76,175,125,0.15); border-color: rgba(76,175,125,0.35); color: var(--green); }
-  .btn-green:hover { background: rgba(76,175,125,0.25); border-color: var(--green); }
-  .btn-gold { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
-  .btn-gold:hover { background: rgba(200,146,42,0.25); border-color: var(--gold); }
-  .btn-ghost { background: transparent; border-color: var(--border); color: var(--muted); }
-  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
-  .btn-red { background: rgba(224,92,92,0.08); border-color: rgba(224,92,92,0.2); color: var(--red); }
-  .btn-red:hover { background: rgba(224,92,92,0.18); border-color: var(--red); }
+/* ══ CARD VIEW ══ */
+.cmd-grid { display: grid; gap: 6px; }
+.cmd-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; transition: all 0.18s; position: relative; overflow: hidden; }
+.cmd-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 10px 0 0 10px; background: var(--gold); opacity: 0; transition: opacity 0.18s; }
+.cmd-card:hover { border-color: var(--gold-border); background: var(--card-hover); transform: translateX(2px); }
+.cmd-card:hover::before { opacity: 1; }
+.cmd-text { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gold-light); font-weight: 500; word-break: break-all; line-height: 1.6; margin-bottom: 3px; white-space: pre-wrap; }
+.cmd-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+.cmd-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; align-items: center; }
+.cmd-ref   { font-size: 9px; font-family: 'JetBrains Mono', monospace; background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-border); border-radius: 4px; padding: 1px 6px; }
+.cmd-tag   { font-size: 9px; font-family: 'JetBrains Mono', monospace; background: rgba(76,175,125,0.1); color: var(--green); border: 1px solid rgba(76,175,125,0.2); border-radius: 4px; padding: 1px 6px; }
+.cmd-ver   { font-size: 9px; font-family: 'JetBrains Mono', monospace; background: rgba(100,150,255,0.1); color: #7aaeff; border: 1px solid rgba(100,150,255,0.2); border-radius: 4px; padding: 1px 6px; }
+.cmd-notes { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 6px; padding: 5px 10px; background: rgba(255,255,255,0.03); border-left: 2px solid var(--border); border-radius: 0 4px 4px 0; line-height: 1.5; white-space: pre-wrap; }
+.card-actions { display: flex; gap: 4px; align-items: flex-start; flex-shrink: 0; }
 
-  /* ── EMPTY STATE ── */
-  .empty-state { text-align: center; padding: 40px 20px; }
-  .empty-icon { font-size: 36px; margin-bottom: 10px; }
-  .empty-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
-  .empty-desc { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; line-height: 1.6; }
+/* ══ TABLE VIEW ══ */
+.cmd-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.cmd-table th { text-align: left; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); font-weight: 500; }
+.cmd-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.cmd-table tr:hover td { background: var(--card-hover); }
+.cmd-table td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--gold-light); font-size: 11.5px; white-space: pre-wrap; word-break: break-all; max-width: 320px; }
+.cmd-table td:nth-child(2) { color: var(--text-dim); max-width: 300px; }
+.cmd-table td:last-child { white-space: nowrap; }
+.tbl-actions { display: flex; gap: 4px; }
 
-  /* ── SEARCH RESULTS ── */
-  .search-results { display: none; }
-  .search-results.active { display: block; }
-  .no-results { text-align: center; padding: 50px 20px; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 13px; }
-  .subsection { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin: 20px 0 10px; font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; gap: 10px; }
-  .subsection::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+/* ══ BUTTONS ══ */
+.btn { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; padding: 7px 14px; border: 1px solid; transition: all 0.18s; letter-spacing: 0.5px; text-transform: uppercase; }
+.btn-green { background: rgba(76,175,125,0.15); border-color: rgba(76,175,125,0.35); color: var(--green); }
+.btn-green:hover { background: rgba(76,175,125,0.25); border-color: var(--green); }
+.btn-gold { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
+.btn-gold:hover { background: rgba(200,146,42,0.25); border-color: var(--gold); }
+.btn-ghost { background: transparent; border-color: var(--border); color: var(--muted); }
+.btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+.btn-red { background: rgba(224,92,92,0.08); border-color: rgba(224,92,92,0.2); color: var(--red); }
+.btn-red:hover { background: rgba(224,92,92,0.18); border-color: var(--red); }
+.copy-btn, .del-btn, .edit-btn { font-family: 'JetBrains Mono', monospace; font-size: 10px; cursor: pointer; border-radius: 6px; padding: 4px 9px; font-weight: 600; border: 1px solid; transition: all 0.18s; white-space: nowrap; }
+.copy-btn { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
+.copy-btn:hover { background: rgba(200,146,42,0.25); border-color: var(--gold); }
+.copy-btn.copied { background: rgba(76,175,125,0.15); border-color: var(--green); color: var(--green); }
+.del-btn  { background: rgba(224,92,92,0.08); border-color: rgba(224,92,92,0.2); color: var(--red); }
+.del-btn:hover  { background: rgba(224,92,92,0.18); border-color: var(--red); }
+.edit-btn { background: rgba(200,146,42,0.08); border-color: rgba(200,146,42,0.15); color: var(--muted); }
+.edit-btn:hover { color: var(--gold); border-color: var(--gold-border); }
 
-  /* ── MODAL ── */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; width: 100%; max-width: 540px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
-  .modal-title { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 18px; }
-  .modal-actions { display: flex; gap: 8px; margin-top: 18px; justify-content: flex-end; flex-wrap: wrap; }
+/* ══ SK CARDS ══ */
+.sk-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; gap: 14px; transition: all 0.18s; text-decoration: none; color: inherit; margin-bottom: 6px; }
+.sk-card:hover { border-color: var(--gold-border); background: var(--card-hover); }
+.sk-id { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--gold); }
+.sk-desc { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+.sk-arrow { color: var(--muted); font-size: 16px; flex-shrink: 0; }
 
-  /* ── TOAST ── */
-  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--green); border-radius: 10px; padding: 12px 18px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green); z-index: 300; transform: translateY(80px); opacity: 0; transition: all 0.3s; pointer-events: none; box-shadow: 0 8px 24px rgba(0,0,0,0.3); max-width: 320px; }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.error { border-color: var(--red); color: var(--red); }
+/* ══ COPY HISTORY PANEL ══ */
+.history-panel { position: fixed; top: 0; right: -340px; width: 320px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); z-index: 150; transition: right 0.3s; box-shadow: -8px 0 32px var(--shadow); display: flex; flex-direction: column; }
+.history-panel.open { right: 0; }
+.history-header { padding: 16px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, var(--navy-dark), var(--navy)); }
+.history-title { font-size: 13px; font-weight: 700; color: #fff; font-family: 'JetBrains Mono', monospace; }
+.history-close { background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 18px; padding: 2px 6px; }
+.history-close:hover { color: #fff; }
+.history-body { flex: 1; overflow-y: auto; padding: 12px; }
+.history-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.history-item { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.18s; }
+.history-item:hover { border-color: var(--gold-border); }
+.history-cmd { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold-light); white-space: pre-wrap; word-break: break-all; margin-bottom: 4px; }
+.history-time { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); }
+.history-cat { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); float: right; }
+.history-footer { padding: 10px 12px; border-top: 1px solid var(--border); }
 
-  /* ── FOOTER ── */
-  .footer { text-align: center; padding: 28px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 40px; letter-spacing: 1px; }
-  .footer span { color: var(--gold); }
+/* ══ MODAL ══ */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px; width: 100%; max-width: 560px; box-shadow: 0 20px 60px var(--shadow); max-height: 92vh; overflow-y: auto; }
+.modal-title { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; flex-wrap: wrap; }
 
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* ══ FORM ══ */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; text-transform: uppercase; }
+.form-input, .form-select, .form-textarea { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 12px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; }
+.form-textarea { resize: vertical; min-height: 58px; line-height: 1.5; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(76,175,125,0.1); }
+.form-select option { background: var(--surface); }
+.tags-input-wrap { display: flex; flex-wrap: wrap; gap: 5px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; min-height: 38px; align-items: center; cursor: text; }
+.tags-input-wrap:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px rgba(76,175,125,0.1); }
+.tag-chip { display: inline-flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; background: rgba(76,175,125,0.12); color: var(--green); border: 1px solid rgba(76,175,125,0.2); border-radius: 4px; padding: 2px 6px; }
+.tag-chip-del { cursor: pointer; opacity: 0.6; font-size: 12px; line-height: 1; }
+.tag-chip-del:hover { opacity: 1; }
+.tags-input { border: none; background: transparent; outline: none; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text); min-width: 80px; flex: 1; padding: 2px 0; }
+.ver-checkboxes { display: flex; gap: 8px; flex-wrap: wrap; }
+.ver-check { display: flex; align-items: center; gap: 5px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); cursor: pointer; }
+.ver-check input { accent-color: var(--green); cursor: pointer; }
 
-  @media (max-width: 640px) {
-    .header, .main { padding: 14px 16px; }
-    .nav-tabs { padding: 0 12px; }
-    .logo-divider, .logo-module { display: none; }
-    .form-row, .form-row.triple { grid-template-columns: 1fr; }
-  }
+/* ══ SUBSECTION ══ */
+.subsection { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin: 18px 0 8px; font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; gap: 10px; }
+.subsection::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ══ EMPTY ══ */
+.empty-state { text-align: center; padding: 40px 20px; }
+.empty-icon { font-size: 36px; margin-bottom: 10px; }
+.empty-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+.empty-desc { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; line-height: 1.6; }
+
+/* ══ SEARCH ══ */
+.search-results { display: none; }
+.search-results.active { display: block; }
+.no-results { text-align: center; padding: 50px 20px; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+
+/* ══ KEYBOARD SHORTCUT HINT ══ */
+.kbd { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 9px; background: var(--border); color: var(--muted); border-radius: 4px; padding: 1px 5px; border: 1px solid var(--muted); }
+
+/* ══ TOAST ══ */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--surface); border: 1px solid var(--green); border-radius: 10px; padding: 11px 18px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green); z-index: 300; opacity: 0; transition: all 0.3s; pointer-events: none; box-shadow: 0 8px 24px var(--shadow); white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.error { border-color: var(--red); color: var(--red); }
+
+/* ══ FOOTER ══ */
+.footer { text-align: center; padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 36px; letter-spacing: 1px; }
+.footer span { color: var(--gold); }
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+@media (max-width: 640px) {
+  .header, .main { padding: 12px 14px; }
+  .nav-tabs { padding: 0 10px; }
+  .logo-divider, .logo-module { display: none; }
+  .form-row { grid-template-columns: 1fr; }
+  .history-panel { width: 90vw; }
+  .filter-row { display: none; }
+}
 </style>
 </head>
 <body>
@@ -211,73 +299,92 @@
       <div class="logo-divider"></div>
       <div class="logo-module">Check Point <span>Reference</span></div>
     </div>
-    <div class="auth-bar">
+    <div class="header-controls">
       <div class="auth-status">
         <div class="auth-dot" id="authDot"></div>
         <span class="auth-label" id="authLabel">Sin conectar</span>
       </div>
+      <!-- History -->
+      <button class="icon-btn" onclick="toggleHistory()" title="Historial de copiados (H)">🕑</button>
+      <!-- Dark/Light -->
+      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+      <!-- Install -->
+      <button class="btn-auth btn-install" id="installBtn" onclick="installPWA()">📲 Instalar</button>
+      <!-- Auth -->
       <button class="btn-auth btn-signin" id="authBtn" onclick="handleAuth()">Conectar Drive</button>
-      <button class="btn-auth btn-signin" id="installBtn" onclick="installPWA()" style="display:none;background:rgba(76,175,125,0.15);border-color:rgba(76,175,125,0.3);color:#4CAF7D;">📲 Instalar App</button>
     </div>
   </div>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="Buscar en todos los comandos..." oninput="handleSearch(this.value)">
+  <div class="search-row">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Buscar comandos... (Ctrl+K)" oninput="handleSearch(this.value)">
+      <span class="search-shortcut">Ctrl+K</span>
+    </div>
+  </div>
+  <div class="filter-row" id="filterRow">
+    <span class="filter-label">Versión:</span>
+    <button class="filter-pill version active" data-ver="all" onclick="setVerFilter('all',this)">Todas</button>
+    <button class="filter-pill version" data-ver="R81.10" onclick="setVerFilter('R81.10',this)">R81.10</button>
+    <button class="filter-pill version" data-ver="R81.20" onclick="setVerFilter('R81.20',this)">R81.20</button>
+    <button class="filter-pill version" data-ver="R82" onclick="setVerFilter('R82',this)">R82</button>
   </div>
 </div>
 
 <!-- ═══ NAV ═══ -->
 <div class="nav-wrap">
   <div class="nav-tabs" id="navTabs"></div>
-  <button class="nav-add-cat" onclick="openCatModal()" title="Nueva categoría">＋ Categoría</button>
+  <div class="nav-actions">
+    <button class="nav-btn green" onclick="openCatModal()">＋ Categoría</button>
+  </div>
 </div>
 
 <!-- ═══ MAIN ═══ -->
 <div class="main">
-
-  <!-- Not connected -->
   <div id="notConnected" class="state-screen">
     <div class="state-icon">☁️</div>
     <div class="state-title">Conecta tu Google Drive</div>
-    <div class="state-desc">
-      Todos los comandos se almacenan en tu Drive.<br>
-      Accede desde cualquier PC o celular con tu cuenta Google.
-    </div>
+    <div class="state-desc">Todos los comandos viven en tu Drive.<br>Accede desde cualquier PC o celular.</div>
     <button class="btn btn-green" onclick="handleAuth()">Conectar Google Drive</button>
   </div>
-
-  <!-- Loading -->
   <div id="loadingScreen" class="state-screen" style="display:none;">
     <div class="state-icon">⏳</div>
-    <div class="state-title">Cargando comandos...</div>
+    <div class="state-title">Cargando...</div>
     <div class="state-desc">Sincronizando con Google Drive</div>
   </div>
-
-  <!-- App content -->
   <div id="appContent">
     <div class="search-results" id="searchResults"><div id="searchContent"></div></div>
     <div id="sectionContent"></div>
   </div>
-
   <div class="footer"><span>SafeID SAS</span> · Seguridad de la Información · By Santiago8a</div>
 </div>
 
-<!-- ═══ ADD/EDIT CMD MODAL ═══ -->
+<!-- ═══ HISTORY PANEL ═══ -->
+<div class="history-panel" id="historyPanel">
+  <div class="history-header">
+    <span class="history-title">🕑 Historial de copiados</span>
+    <button class="history-close" onclick="toggleHistory()">✕</button>
+  </div>
+  <div class="history-body" id="historyBody"></div>
+  <div class="history-footer">
+    <button class="btn btn-ghost" style="width:100%;font-size:10px;" onclick="clearHistory()">Limpiar historial</button>
+  </div>
+</div>
+
+<!-- ═══ CMD MODAL ═══ -->
 <div class="modal-overlay" id="cmdModal">
   <div class="modal">
     <div class="modal-title" id="cmdModalTitle">➕ Agregar comando</div>
     <input type="hidden" id="cmd-edit-id">
-    <input type="hidden" id="cmd-edit-cat">
-    <div class="form-row">
-      <div class="form-group" style="grid-column:1/-1;">
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="form-group">
         <label class="form-label">Comando *</label>
         <textarea class="form-textarea" id="cmd-input" placeholder="ej: cphaprob state" rows="2"></textarea>
       </div>
     </div>
-    <div class="form-row">
-      <div class="form-group" style="grid-column:1/-1;">
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="form-group">
         <label class="form-label">Descripción *</label>
-        <textarea class="form-textarea" id="cmd-desc" placeholder="¿Para qué sirve? ¿Cuándo lo usas?" rows="2"></textarea>
+        <textarea class="form-textarea" id="cmd-desc" placeholder="¿Para qué sirve?" rows="2"></textarea>
       </div>
     </div>
     <div class="form-row">
@@ -286,51 +393,70 @@
         <select class="form-select" id="cmd-cat"></select>
       </div>
       <div class="form-group">
-        <label class="form-label">Referencia (opcional)</label>
-        <input class="form-input" id="cmd-ref" type="text" placeholder="ej: sk180488, Caso OPSA...">
+        <label class="form-label">Referencia</label>
+        <input class="form-input" id="cmd-ref" type="text" placeholder="sk180488, Caso OPSA...">
       </div>
     </div>
     <div class="form-row">
-      <div class="form-group" style="grid-column:1/-1;">
-        <label class="form-label">Notas (opcional)</label>
-        <textarea class="form-textarea" id="cmd-notes" placeholder="Contexto especifico: versiones, clientes, advertencias..." rows="2"></textarea>
+      <div class="form-group">
+        <label class="form-label">Tags (Enter para agregar)</label>
+        <div class="tags-input-wrap" id="tagsWrap" onclick="document.getElementById('tagInput').focus()">
+          <input type="text" id="tagInput" class="tags-input" placeholder="cluster, debug...">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Versión GAiA</label>
+        <div class="ver-checkboxes">
+          <label class="ver-check"><input type="checkbox" id="ver-all" onchange="toggleAllVer(this)"> Todas</label>
+          <label class="ver-check"><input type="checkbox" id="ver-r8110" value="R81.10"> R81.10</label>
+          <label class="ver-check"><input type="checkbox" id="ver-r8120" value="R81.20"> R81.20</label>
+          <label class="ver-check"><input type="checkbox" id="ver-r82" value="R82"> R82</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="form-group">
+        <label class="form-label">Notas</label>
+        <textarea class="form-textarea" id="cmd-notes" placeholder="Contexto específico: clientes, versiones, advertencias..." rows="2"></textarea>
       </div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeCmdModal()">Cancelar</button>
-      <button class="btn btn-green" onclick="saveCmd()">💾 Guardar</button>
+      <button class="btn btn-green" onclick="saveCmd()">💾 Guardar <span class="kbd">Ctrl+↵</span></button>
     </div>
   </div>
 </div>
 
-<!-- ═══ NEW CATEGORY MODAL ═══ -->
+<!-- ═══ CAT MODAL ═══ -->
 <div class="modal-overlay" id="catModal">
   <div class="modal">
     <div class="modal-title">🗂️ Nueva categoría</div>
-    <div class="form-group" style="margin-bottom:12px;">
-      <label class="form-label">Nombre de la categoría *</label>
-      <input class="form-input" id="cat-name" type="text" placeholder="ej: NAT, Logs, SmartConsole...">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Emoji / Ícono</label>
-      <input class="form-input" id="cat-icon" type="text" placeholder="ej: 🔥 📋 🛡️" maxlength="4">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nombre *</label>
+        <input class="form-input" id="cat-name" type="text" placeholder="ej: NAT, Logs, SmartConsole">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ícono / Emoji</label>
+        <input class="form-input" id="cat-icon" type="text" placeholder="🔥" maxlength="4">
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeCatModal()">Cancelar</button>
-      <button class="btn btn-green" onclick="saveCategory()">✅ Crear categoría</button>
+      <button class="btn btn-green" onclick="saveCategory()">✅ Crear</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ DELETE CATEGORY CONFIRM MODAL ═══ -->
+<!-- ═══ DEL CAT MODAL ═══ -->
 <div class="modal-overlay" id="delCatModal">
   <div class="modal">
     <div class="modal-title">🗑️ Eliminar categoría</div>
-    <p style="font-size:13px;color:#8fa3be;margin-bottom:8px;">¿Estás seguro? Se eliminarán también todos los comandos de esta categoría.</p>
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">¿Eliminar esta categoría y todos sus comandos?</p>
     <p style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--red);" id="delCatName"></p>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeDelCatModal()">Cancelar</button>
-      <button class="btn btn-red" onclick="confirmDelCat()">🗑️ Eliminar</button>
+      <button class="btn btn-red" onclick="confirmDelCat()">Eliminar</button>
     </div>
   </div>
 </div>
@@ -347,312 +473,354 @@ var CLIENT_ID  = '668930269753-8qvida9c3s1ureldvr5etmcgoeg0o3uh.apps.googleuserc
 var SCOPES     = 'https://www.googleapis.com/auth/drive.file';
 var DRIVE_FILE = 'safeid_cp_comandos.json';
 var HINT_KEY   = 'safeid_gdrive_connected';
+var THEME_KEY  = 'safeid_theme';
+var HIST_KEY   = 'safeid_history';
 
 /* ══════════════════════════════════════
-   DEFAULT DATA (first time setup)
+   DEFAULT DB
 ══════════════════════════════════════ */
 var DEFAULT_DB = {
   categories: [
-    { id: 'quantum',  name: 'Quantum / ClusterXL', icon: '⚙️' },
-    { id: 'tools',    name: 'Tools CP',             icon: '🔧' },
-    { id: 'vpn',      name: 'VPN Debug',            icon: '🔐' },
-    { id: 'unix',     name: 'UNIX / GAiA',          icon: '🐧' },
-    { id: 'maestro',  name: 'Maestro',              icon: '🏗️' },
-    { id: 'identity', name: 'Identity Awareness',   icon: '🪪' },
-    { id: 'upgrade',  name: 'Upgrade',              icon: '⬆️' },
-    { id: 'sks',      name: 'SKs Importantes',      icon: '📚' },
+    { id:'quantum',  name:'Quantum / ClusterXL', icon:'⚙️' },
+    { id:'tools',    name:'Tools CP',             icon:'🔧' },
+    { id:'vpn',      name:'VPN Debug',            icon:'🔐' },
+    { id:'unix',     name:'UNIX / GAiA',          icon:'🐧' },
+    { id:'maestro',  name:'Maestro',              icon:'🏗️' },
+    { id:'identity', name:'Identity Awareness',   icon:'🪪' },
+    { id:'upgrade',  name:'Upgrade',              icon:'⬆️' },
+    { id:'sks',      name:'SKs Importantes',      icon:'📚' },
   ],
   commands: [
-    // QUANTUM
-    { id:'q1',  cat:'quantum',  cmd:'clusterXL_admin down',   desc:'Conmutar el cluster. Usar "up" para subirlo.', ref:'' },
-    { id:'q2',  cat:'quantum',  cmd:'vsenv <ID>',              desc:'Cambiar entorno de VSX. ID es el número del entorno.', ref:'' },
-    { id:'q3',  cat:'quantum',  cmd:'set virtual-system',      desc:'Cambiar entorno de VSX. Solo funciona en clish.', ref:'' },
-    { id:'q4',  cat:'quantum',  cmd:'cphaprob state',          desc:'Valida el estado del cluster. En VSX se debe correr en el entorno correspondiente.', ref:'' },
-    { id:'q5',  cat:'quantum',  cmd:'cphaprob list',           desc:'Mostrar estado y configuración del cluster.', ref:'' },
-    { id:'q6',  cat:'quantum',  cmd:'show asset all',          desc:'Serial e información general del appliance. Funciona en clish.', ref:'' },
-    { id:'q7',  cat:'quantum',  cmd:'vsx stat -v',             desc:'Muestra información general de los VS configurados.', ref:'' },
-    { id:'q8',  cat:'quantum',  cmd:'cpwd_admin list',         desc:'Validar los procesos del sistema.', ref:'' },
-    { id:'q9',  cat:'quantum',  cmd:'fw ctl pstat',            desc:'Estado de la tabla de conexiones y estadísticas del firewall kernel.', ref:'' },
-    { id:'q10', cat:'quantum',  cmd:'fw ctl setsync start',    desc:'Iniciar sincronización del cluster manualmente.', ref:'' },
-    { id:'q11', cat:'quantum',  cmd:'cphaprob syncstat',       desc:'Verificar el estado de sincronización entre miembros del cluster.', ref:'' },
-    { id:'q12', cat:'quantum',  cmd:'cphaprob -a if',          desc:'Estado de las interfaces en el cluster.', ref:'' },
-    { id:'q13', cat:'quantum',  cmd:'cpinfo -d -D -z -o /home/admin/CPINFO_$(uname -n)_`date+%Y_%m_%d_%H-%M-%S`', desc:'Generar CPInfo completo del appliance.', ref:'' },
-    { id:'q14', cat:'quantum',  cmd:'cpstat fw',               desc:'Validar fecha y hora de la última instalación de políticas.', ref:'' },
-    { id:'q15', cat:'quantum',  cmd:'fwaccel stat',            desc:'Ver las reglas que están siendo aceleradas por SecureXL.', ref:'' },
-    { id:'q16', cat:'quantum',  cmd:'fw ctl zdebug + drop | grep x.x.x.x', desc:'Validar drops a nivel kernel filtrando por IP específica.', ref:'' },
-    { id:'q17', cat:'quantum',  cmd:'cd $FWDIR/log',           desc:'Ubicación de logs de tráfico en el Management.', ref:'' },
-    { id:'q18', cat:'quantum',  cmd:'ls -lh /var/log/dump/usermode', desc:'Validar archivos de coredump.', ref:'' },
-    { id:'q19', cat:'quantum',  cmd:'cd $RTDIR/log_indexes/',  desc:'Ubicación de logs de auditoría.', ref:'' },
-    { id:'q20', cat:'quantum',  cmd:'fw ctl multik print_heavy_conn', desc:'Mostrar conexiones pesadas activas.', ref:'sk164215' },
-    // TOOLS
-    { id:'t1', cat:'tools', cmd:'fw monitor -F "IPOrig,PortOri,IPDest,PortDest,0" -F "IPOrig,PortOri,IPDest,PortDest,0"', desc:'Captura de tráfico a nivel kernel con filtros bidireccionales.', ref:'' },
-    { id:'t2', cat:'tools', cmd:'cpview -s export',            desc:'Exportar datos de CPView de los últimos 30 días.', ref:'' },
-    { id:'t3', cat:'tools', cmd:'tcpdump -p -i any -w /var/log/capture.cap', desc:'Captura de tráfico completa guardada en archivo .cap.', ref:'' },
-    { id:'t4', cat:'tools', cmd:'cpmonitor /var/log/capture.cap', desc:'Analizar archivo de captura con cpmonitor.', ref:'' },
-    { id:'t5', cat:'tools', cmd:'hcp -r all --include-wts yes --include-charts yes', desc:'Generar Health Check completo incluyendo gráficas.', ref:'' },
-    { id:'t6', cat:'tools', cmd:'cd $FWDIR/bin/upgrade_tools/\n./migrate export /var/log/Migrate_Export', desc:'Exportar base de datos de Management (R80.40).', ref:'' },
-    { id:'t7', cat:'tools', cmd:'fw tab -t connections -u > /var/log/Connections_Table.txt', desc:'Exportar tabla de conexiones activas a archivo de texto.', ref:'' },
-    // VPN
-    { id:'v1', cat:'vpn', cmd:'vpn debug trunc ALL=5\nike debug trunc\nike debug on TDERROR_ALL_ALL=5', desc:'Iniciar debug VPN completo (R81.10).', ref:'sk180488' },
-    { id:'v2', cat:'vpn', cmd:'vpn debug trunc ALL=5', desc:'Iniciar debug VPN (R81.20 y superior).', ref:'sk180488' },
-    { id:'v3', cat:'vpn', cmd:'vpn debug off', desc:'Detener debug VPN (aplica para ambas versiones).', ref:'sk180488' },
-    { id:'v4', cat:'vpn', cmd:'cd $FWDIR/log\ntar -czvf debugvpn.tgz vpnd.elg* legacy_ike.elg* legacy_ikev2.xmll ike.elg* iked.elg* ikev2.xmll', desc:'Comprimir archivos de debug VPN (R81.10).', ref:'sk180488' },
-    { id:'v5', cat:'vpn', cmd:'cd $FWDIR/log\ntar -czvf debugvpn.tgz vpnd.elg* vpnd.ikev1trace* vpnd.ikev2trace* ike*.elg* iked*.ikev1trace* iked*.ikev2trace*', desc:'Comprimir archivos de debug VPN (R81.20+).', ref:'sk180488' },
-    { id:'v6', cat:'vpn', cmd:'vpn tu tlist -b', desc:'Análisis de tráfico VPN.', ref:'' },
-    // UNIX
-    { id:'u1', cat:'unix', cmd:'show interfaces <interfaz>', desc:'Muestra el estado de la interfaz, link state y demás información (clish).', ref:'' },
-    { id:'u2', cat:'unix', cmd:'ethtool <interfaz>', desc:'Detalles generales de una interfaz (modo Expert).', ref:'' },
-    { id:'u3', cat:'unix', cmd:'scp archivo user@IPAdd:ruta/', desc:'Copiar un archivo a un servidor remoto por SCP.', ref:'' },
-    { id:'u4', cat:'unix', cmd:'netstat -nr', desc:'Ver la tabla de rutas del sistema.', ref:'' },
-    { id:'u5', cat:'unix', cmd:'du -h --max-depth=1 /var/log | sort -n -r', desc:'Listar directorios en /var/log ordenados por tamaño.', ref:'sk60080' },
-    { id:'u6', cat:'unix', cmd:'find /var/log -size +1000M -exec ls -lh {} \\;', desc:'Listar archivos mayores a 1 GB en /var/log.', ref:'sk63361' },
-    // MAESTRO
-    { id:'m1',  cat:'maestro', cmd:'asg stat -i tasks',        desc:'Estadísticas del cluster completo. Indica quién es el SMO.', ref:'' },
-    { id:'m2',  cat:'maestro', cmd:'set maestro port x/x/x type downlink', desc:'Establecer el puerto como downlink en el orquestador.', ref:'' },
-    { id:'m3',  cat:'maestro', cmd:'orch_stat -p',             desc:'Desde el orquestador: validar información y estado general de las interfaces.', ref:'' },
-    { id:'m4',  cat:'maestro', cmd:'orch_stat -a',             desc:'Solo se corre en el orquestador. Estado general del sistema.', ref:'' },
-    { id:'m5',  cat:'maestro', cmd:'lldpctl',                  desc:'Mostrar conexiones a nivel de Capa 2 (LLDP).', ref:'' },
-    { id:'m6',  cat:'maestro', cmd:'asg stat -v',              desc:'Mostrar el estado del sistema y de los componentes hardware.', ref:'' },
-    { id:'m7',  cat:'maestro', cmd:'asg monitor',              desc:'Monitorizar continuamente el estado del sistema y sus componentes.', ref:'' },
-    { id:'m8',  cat:'maestro', cmd:'asg chassis_admin -c 1 down', desc:'Baja administrativamente el chassis 1. Usar "up" para subirlo.', ref:'' },
-    { id:'m9',  cat:'maestro', cmd:'asg_cp2blades <archivo>',  desc:'⚠️ Copia el archivo a todas las cajas en la misma ruta. Reemplaza si existe. ¡Usar con cuidado!', ref:'' },
-    { id:'m10', cat:'maestro', cmd:'asg stat vs all',          desc:'Verifica el estado de cada VS en cada Chassis.', ref:'' },
-    { id:'m11', cat:'maestro', cmd:"cpinfo -Q '-r -t all -m all' -d -D", desc:'Saca CPInfo de todos los SGM y de todos los VS.', ref:'' },
-    { id:'m12', cat:'maestro', cmd:'cpinfo -x -d -D -z -o /home/admin/CPINFO_$(uname -n)_`date+%Y_%m_%d_%H-%M-%S`', desc:'CPINFO para servidor de management.', ref:'' },
-    { id:'m13', cat:'maestro', cmd:'set chassis high-availability vs chassis_priority " "', desc:'Cambia la prioridad del chassis. Se ejecuta en gclish.', ref:'' },
-    { id:'m14', cat:'maestro', cmd:'hcp -r all -L --include-wts yes', desc:'Generar Health Check en entorno Maestro.', ref:'' },
-    // IDENTITY
-    { id:'i1',  cat:'identity', cmd:'pep show pdp all',         desc:'Muestra todos los PDP configurados en Identity Awareness, incluyendo estado y tipo.', ref:'' },
-    { id:'i2',  cat:'identity', cmd:'pep show user all',        desc:'Lista todos los usuarios actualmente identificados por el PEP.', ref:'' },
-    { id:'i3',  cat:'identity', cmd:'pep show ip all',          desc:'Muestra todas las IPs con identidad asociada actualmente en el PEP.', ref:'' },
-    { id:'i4',  cat:'identity', cmd:'pep show connection all',  desc:'Muestra todas las conexiones activas con identidad en el PEP.', ref:'' },
-    { id:'i5',  cat:'identity', cmd:'pdp monitor',              desc:'Monitoreo en tiempo real del PDP — muestra usuarios, IPs y sesiones activas.', ref:'' },
-    { id:'i6',  cat:'identity', cmd:'pdp connections',          desc:'Lista las conexiones actuales manejadas por el PDP.', ref:'' },
-    { id:'i7',  cat:'identity', cmd:'pdp update all',           desc:'Fuerza actualización de identidades desde todas las fuentes configuradas.', ref:'' },
-    { id:'i8',  cat:'identity', cmd:'adlog a dc',               desc:'Muestra logs de actividad del AD Query hacia los Domain Controllers.', ref:'' },
-    { id:'i9',  cat:'identity', cmd:'adlog a user <username>',  desc:'Busca actividad de un usuario específico en los logs de AD Query.', ref:'' },
-    { id:'i10', cat:'identity', cmd:'adlog a comp <hostname>',  desc:'Busca actividad de una máquina específica en los logs de AD Query.', ref:'' },
-    { id:'i11', cat:'identity', cmd:'pdp debug on TDERROR_ALL_ALL=5', desc:'Habilita debug completo del PDP. Usar con precaución en producción.', ref:'' },
-    { id:'i12', cat:'identity', cmd:'pdp debug off',            desc:'Deshabilita el debug del PDP.', ref:'' },
-    { id:'i13', cat:'identity', cmd:'pep show role all',        desc:'Muestra todos los roles de acceso configurados en Identity Awareness.', ref:'' },
-    { id:'i14', cat:'identity', cmd:'pep show statistics',      desc:'Estadísticas del PEP: usuarios, IPs, sesiones y rendimiento general.', ref:'' },
-    // UPGRADE
-    { id:'up1', cat:'upgrade', cmd:'cd $FWDIR/scripts\n./migrate_server export -v R81.20 /var/log/Migrate_Export', desc:'Exportar base de datos de Management (R81.10 / R81.20).', ref:'' },
-    { id:'up2', cat:'upgrade', cmd:'./migrate_server import -v R81.20 /var/log/Migrate_Export', desc:'Importar base de datos en el nuevo Management.', ref:'' },
-    // SKs
-    { id:'sk1', cat:'sks', cmd:'sk60080',  desc:'Disk space tips and tricks for Gaia OS', ref:'https://support.checkpoint.com/results/sk/sk60080' },
-    { id:'sk2', cat:'sks', cmd:'sk63361',  desc:'How to clean up disk space on a Security Gateway or Security Management Server', ref:'https://support.checkpoint.com/results/sk/sk63361' },
-    { id:'sk3', cat:'sks', cmd:'sk180488', desc:'How to collect a debug for VPN issues', ref:'https://support.checkpoint.com/results/sk/sk180488' },
-    { id:'sk4', cat:'sks', cmd:'sk164215', desc:'How to Detect and Handle Heavy Connections', ref:'https://support.checkpoint.com/results/sk/sk164215' },
-    { id:'sk5', cat:'sks', cmd:'sk159452', desc:'Policy Installation Debug Script', ref:'https://support.checkpoint.com/results/sk/sk159452' },
-    { id:'sk6', cat:'sks', cmd:'sk112334', desc:'How to debug SmartConsole / SmartDashboard', ref:'https://support.checkpoint.com/results/sk/sk112334' },
-    { id:'sk7', cat:'sks', cmd:'sk167213', desc:'VPN Traffic Flow in Maestro Security Group', ref:'https://support.checkpoint.com/results/sk/sk167213' },
-    { id:'sk8', cat:'sks', cmd:'sk73980',  desc:'Relative speeds of algorithms for IPsec and SSL', ref:'https://support.checkpoint.com/results/sk/sk73980' },
+    {id:'q1',  cat:'quantum',  cmd:'clusterXL_admin down',   desc:'Conmutar el cluster. Usar "up" para subirlo.', ref:'', tags:['cluster'], versions:[], notes:''},
+    {id:'q2',  cat:'quantum',  cmd:'vsenv <ID>',              desc:'Cambiar entorno de VSX. ID es el número del entorno.', ref:'', tags:['vsx'], versions:[], notes:''},
+    {id:'q3',  cat:'quantum',  cmd:'set virtual-system',      desc:'Cambiar entorno de VSX. Solo funciona en clish.', ref:'', tags:['vsx'], versions:[], notes:''},
+    {id:'q4',  cat:'quantum',  cmd:'cphaprob state',          desc:'Valida el estado del cluster.', ref:'', tags:['cluster','estado'], versions:[], notes:''},
+    {id:'q5',  cat:'quantum',  cmd:'cphaprob list',           desc:'Mostrar estado y configuración del cluster.', ref:'', tags:['cluster'], versions:[], notes:''},
+    {id:'q6',  cat:'quantum',  cmd:'show asset all',          desc:'Serial e información general del appliance. Funciona en clish.', ref:'', tags:[], versions:[], notes:''},
+    {id:'q7',  cat:'quantum',  cmd:'vsx stat -v',             desc:'Muestra información general de los VS configurados.', ref:'', tags:['vsx'], versions:[], notes:''},
+    {id:'q8',  cat:'quantum',  cmd:'cpwd_admin list',         desc:'Validar los procesos del sistema.', ref:'', tags:['procesos'], versions:[], notes:''},
+    {id:'q9',  cat:'quantum',  cmd:'fw ctl pstat',            desc:'Estado de la tabla de conexiones y estadísticas del firewall kernel.', ref:'', tags:['conexiones'], versions:[], notes:''},
+    {id:'q10', cat:'quantum',  cmd:'fw ctl setsync start',    desc:'Iniciar sincronización del cluster manualmente.', ref:'', tags:['cluster','sync'], versions:[], notes:''},
+    {id:'q11', cat:'quantum',  cmd:'cphaprob syncstat',       desc:'Verificar el estado de sincronización entre miembros del cluster.', ref:'', tags:['cluster','sync'], versions:[], notes:''},
+    {id:'q12', cat:'quantum',  cmd:'cphaprob -a if',          desc:'Estado de las interfaces en el cluster.', ref:'', tags:['cluster','interfaces'], versions:[], notes:''},
+    {id:'q13', cat:'quantum',  cmd:'cpinfo -d -D -z -o /home/admin/CPINFO_$(uname -n)_`date+%Y_%m_%d_%H-%M-%S`', desc:'Generar CPInfo completo del appliance.', ref:'', tags:['cpinfo','diagnóstico'], versions:[], notes:''},
+    {id:'q14', cat:'quantum',  cmd:'cpstat fw',               desc:'Validar fecha y hora de la última instalación de políticas.', ref:'', tags:['políticas'], versions:[], notes:''},
+    {id:'q15', cat:'quantum',  cmd:'fwaccel stat',            desc:'Ver las reglas que están siendo aceleradas por SecureXL.', ref:'', tags:['securexl','aceleración'], versions:[], notes:''},
+    {id:'q16', cat:'quantum',  cmd:'fw ctl zdebug + drop | grep x.x.x.x', desc:'Validar drops a nivel kernel filtrando por IP específica.', ref:'', tags:['drops','debug'], versions:[], notes:''},
+    {id:'q17', cat:'quantum',  cmd:'cd $FWDIR/log',           desc:'Ubicación de logs de tráfico en el Management.', ref:'', tags:['logs'], versions:[], notes:''},
+    {id:'q18', cat:'quantum',  cmd:'ls -lh /var/log/dump/usermode', desc:'Validar archivos de coredump.', ref:'', tags:['coredump'], versions:[], notes:''},
+    {id:'q19', cat:'quantum',  cmd:'cd $RTDIR/log_indexes/',  desc:'Ubicación de logs de auditoría.', ref:'', tags:['logs','auditoría'], versions:[], notes:''},
+    {id:'q20', cat:'quantum',  cmd:'fw ctl multik print_heavy_conn', desc:'Mostrar conexiones pesadas activas.', ref:'sk164215', tags:['conexiones','heavy'], versions:[], notes:''},
+    {id:'t1',  cat:'tools', cmd:'fw monitor -F "IPOrig,PortOri,IPDest,PortDest,0" -F "IPOrig,PortOri,IPDest,PortDest,0"', desc:'Captura de tráfico a nivel kernel con filtros bidireccionales.', ref:'', tags:['captura','monitor'], versions:[], notes:''},
+    {id:'t2',  cat:'tools', cmd:'cpview -s export', desc:'Exportar datos de CPView de los últimos 30 días.', ref:'', tags:['cpview','export'], versions:[], notes:''},
+    {id:'t3',  cat:'tools', cmd:'tcpdump -p -i any -w /var/log/capture.cap', desc:'Captura de tráfico completa guardada en archivo .cap.', ref:'', tags:['captura','tcpdump'], versions:[], notes:''},
+    {id:'t4',  cat:'tools', cmd:'cpmonitor /var/log/capture.cap', desc:'Analizar archivo de captura con cpmonitor.', ref:'', tags:['captura'], versions:[], notes:''},
+    {id:'t5',  cat:'tools', cmd:'hcp -r all --include-wts yes --include-charts yes', desc:'Generar Health Check completo incluyendo gráficas.', ref:'', tags:['healthcheck'], versions:[], notes:''},
+    {id:'t6',  cat:'tools', cmd:'cd $FWDIR/bin/upgrade_tools/\n./migrate export /var/log/Migrate_Export', desc:'Exportar base de datos de Management (R80.40).', ref:'', tags:['migrate','mgmt'], versions:['R81.10'], notes:''},
+    {id:'t7',  cat:'tools', cmd:'fw tab -t connections -u > /var/log/Connections_Table.txt', desc:'Exportar tabla de conexiones activas a archivo de texto.', ref:'', tags:['conexiones'], versions:[], notes:''},
+    {id:'v1',  cat:'vpn', cmd:'vpn debug trunc ALL=5\nike debug trunc\nike debug on TDERROR_ALL_ALL=5', desc:'Iniciar debug VPN completo.', ref:'sk180488', tags:['vpn','debug'], versions:['R81.10'], notes:'Solo para R81.10'},
+    {id:'v2',  cat:'vpn', cmd:'vpn debug trunc ALL=5', desc:'Iniciar debug VPN.', ref:'sk180488', tags:['vpn','debug'], versions:['R81.20','R82'], notes:'R81.20 y superior'},
+    {id:'v3',  cat:'vpn', cmd:'vpn debug off', desc:'Detener debug VPN.', ref:'sk180488', tags:['vpn','debug'], versions:[], notes:''},
+    {id:'v4',  cat:'vpn', cmd:'cd $FWDIR/log\ntar -czvf debugvpn.tgz vpnd.elg* legacy_ike.elg* legacy_ikev2.xmll ike.elg* iked.elg* ikev2.xmll', desc:'Comprimir archivos de debug VPN.', ref:'sk180488', tags:['vpn','debug'], versions:['R81.10'], notes:''},
+    {id:'v5',  cat:'vpn', cmd:'cd $FWDIR/log\ntar -czvf debugvpn.tgz vpnd.elg* vpnd.ikev1trace* vpnd.ikev2trace* ike*.elg* iked*.ikev1trace* iked*.ikev2trace*', desc:'Comprimir archivos de debug VPN.', ref:'sk180488', tags:['vpn','debug'], versions:['R81.20','R82'], notes:''},
+    {id:'v6',  cat:'vpn', cmd:'vpn tu tlist -b', desc:'Análisis de tráfico VPN.', ref:'', tags:['vpn'], versions:[], notes:''},
+    {id:'u1',  cat:'unix', cmd:'show interfaces <interfaz>', desc:'Estado de la interfaz, link state y demás información (clish).', ref:'', tags:['interfaces'], versions:[], notes:''},
+    {id:'u2',  cat:'unix', cmd:'ethtool <interfaz>', desc:'Detalles generales de una interfaz (modo Expert).', ref:'', tags:['interfaces'], versions:[], notes:''},
+    {id:'u3',  cat:'unix', cmd:'scp archivo user@IPAdd:ruta/', desc:'Copiar un archivo a un servidor remoto por SCP.', ref:'', tags:['scp','archivos'], versions:[], notes:''},
+    {id:'u4',  cat:'unix', cmd:'netstat -nr', desc:'Ver la tabla de rutas del sistema.', ref:'', tags:['rutas'], versions:[], notes:''},
+    {id:'u5',  cat:'unix', cmd:'du -h --max-depth=1 /var/log | sort -n -r', desc:'Listar directorios en /var/log ordenados por tamaño.', ref:'sk60080', tags:['disco','logs'], versions:[], notes:''},
+    {id:'u6',  cat:'unix', cmd:'find /var/log -size +1000M -exec ls -lh {} \\;', desc:'Listar archivos mayores a 1 GB en /var/log.', ref:'sk63361', tags:['disco'], versions:[], notes:''},
+    {id:'m1',  cat:'maestro', cmd:'asg stat -i tasks',        desc:'Estadísticas del cluster completo. Indica quién es el SMO.', ref:'', tags:['maestro','estado'], versions:[], notes:''},
+    {id:'m2',  cat:'maestro', cmd:'set maestro port x/x/x type downlink', desc:'Establecer el puerto como downlink en el orquestador.', ref:'', tags:['maestro','puertos'], versions:[], notes:''},
+    {id:'m3',  cat:'maestro', cmd:'orch_stat -p',             desc:'Desde el orquestador: validar información y estado general de las interfaces.', ref:'', tags:['maestro','orch'], versions:[], notes:''},
+    {id:'m4',  cat:'maestro', cmd:'orch_stat -a',             desc:'Solo se corre en el orquestador. Estado general del sistema.', ref:'', tags:['maestro','orch'], versions:[], notes:''},
+    {id:'m5',  cat:'maestro', cmd:'lldpctl',                  desc:'Mostrar conexiones a nivel de Capa 2 (LLDP).', ref:'', tags:['l2','lldp'], versions:[], notes:''},
+    {id:'m6',  cat:'maestro', cmd:'asg stat -v',              desc:'Mostrar el estado del sistema y de los componentes hardware.', ref:'', tags:['maestro','estado'], versions:[], notes:''},
+    {id:'m7',  cat:'maestro', cmd:'asg monitor',              desc:'Monitorizar continuamente el estado del sistema.', ref:'', tags:['maestro','monitor'], versions:[], notes:''},
+    {id:'m8',  cat:'maestro', cmd:'asg chassis_admin -c 1 down', desc:'Baja administrativamente el chassis 1. Usar "up" para subirlo.', ref:'', tags:['maestro','chassis'], versions:[], notes:''},
+    {id:'m9',  cat:'maestro', cmd:'asg_cp2blades <archivo>',  desc:'⚠️ Copia el archivo a todas las cajas. Reemplaza si existe. Usar con cuidado.', ref:'', tags:['maestro','archivos'], versions:[], notes:''},
+    {id:'m10', cat:'maestro', cmd:'asg stat vs all',          desc:'Verifica el estado de cada VS en cada Chassis.', ref:'', tags:['maestro','vsx'], versions:[], notes:''},
+    {id:'m11', cat:'maestro', cmd:"cpinfo -Q '-r -t all -m all' -d -D", desc:'CPInfo de todos los SGM y de todos los VS.', ref:'', tags:['cpinfo','maestro'], versions:[], notes:''},
+    {id:'m12', cat:'maestro', cmd:'cpinfo -x -d -D -z -o /home/admin/CPINFO_$(uname -n)_`date+%Y_%m_%d_%H-%M-%S`', desc:'CPINFO para servidor de management.', ref:'', tags:['cpinfo','mgmt'], versions:[], notes:''},
+    {id:'m13', cat:'maestro', cmd:'set chassis high-availability vs chassis_priority " "', desc:'Cambia la prioridad del chassis. Se ejecuta en gclish.', ref:'', tags:['maestro','ha'], versions:[], notes:''},
+    {id:'m14', cat:'maestro', cmd:'hcp -r all -L --include-wts yes', desc:'Health Check en entorno Maestro.', ref:'', tags:['healthcheck','maestro'], versions:[], notes:''},
+    {id:'i1',  cat:'identity', cmd:'pep show pdp all',         desc:'Muestra todos los PDP configurados en Identity Awareness.', ref:'', tags:['pdp','identity'], versions:[], notes:''},
+    {id:'i2',  cat:'identity', cmd:'pep show user all',        desc:'Lista todos los usuarios actualmente identificados por el PEP.', ref:'', tags:['identity','usuarios'], versions:[], notes:''},
+    {id:'i3',  cat:'identity', cmd:'pep show ip all',          desc:'IPs con identidad asociada actualmente en el PEP.', ref:'', tags:['identity','ip'], versions:[], notes:''},
+    {id:'i4',  cat:'identity', cmd:'pep show connection all',  desc:'Conexiones activas con identidad en el PEP.', ref:'', tags:['identity','conexiones'], versions:[], notes:''},
+    {id:'i5',  cat:'identity', cmd:'pdp monitor',              desc:'Monitoreo en tiempo real del PDP.', ref:'', tags:['pdp','monitor'], versions:[], notes:''},
+    {id:'i6',  cat:'identity', cmd:'pdp update all',           desc:'Fuerza actualización de identidades desde todas las fuentes configuradas.', ref:'', tags:['pdp','identity'], versions:[], notes:''},
+    {id:'i7',  cat:'identity', cmd:'adlog a dc',               desc:'Logs de actividad del AD Query hacia los Domain Controllers.', ref:'', tags:['adquery','logs'], versions:[], notes:''},
+    {id:'i8',  cat:'identity', cmd:'adlog a user <username>',  desc:'Busca actividad de un usuario específico en los logs de AD Query.', ref:'', tags:['adquery','usuario'], versions:[], notes:''},
+    {id:'i9',  cat:'identity', cmd:'adlog a comp <hostname>',  desc:'Busca actividad de una máquina específica en los logs de AD Query.', ref:'', tags:['adquery'], versions:[], notes:''},
+    {id:'i10', cat:'identity', cmd:'pdp debug on TDERROR_ALL_ALL=5', desc:'Debug completo del PDP. Usar con precaución en producción.', ref:'', tags:['pdp','debug'], versions:[], notes:''},
+    {id:'i11', cat:'identity', cmd:'pdp debug off',            desc:'Deshabilita el debug del PDP.', ref:'', tags:['pdp','debug'], versions:[], notes:''},
+    {id:'i12', cat:'identity', cmd:'pep show role all',        desc:'Roles de acceso configurados en Identity Awareness.', ref:'', tags:['identity','roles'], versions:[], notes:''},
+    {id:'i13', cat:'identity', cmd:'pep show statistics',      desc:'Estadísticas del PEP: usuarios, IPs, sesiones.', ref:'', tags:['identity','stats'], versions:[], notes:''},
+    {id:'up1', cat:'upgrade', cmd:'cd $FWDIR/scripts\n./migrate_server export -v R81.20 /var/log/Migrate_Export', desc:'Exportar base de datos de Management.', ref:'', tags:['migrate','mgmt'], versions:['R81.10','R81.20'], notes:''},
+    {id:'up2', cat:'upgrade', cmd:'./migrate_server import -v R81.20 /var/log/Migrate_Export', desc:'Importar base de datos en el nuevo Management.', ref:'', tags:['migrate','mgmt'], versions:['R81.10','R81.20'], notes:''},
+    {id:'sk1', cat:'sks', cmd:'sk60080',  desc:'Disk space tips and tricks for Gaia OS', ref:'https://support.checkpoint.com/results/sk/sk60080', tags:[], versions:[], notes:''},
+    {id:'sk2', cat:'sks', cmd:'sk63361',  desc:'How to clean up disk space on Security Gateway or SMS', ref:'https://support.checkpoint.com/results/sk/sk63361', tags:[], versions:[], notes:''},
+    {id:'sk3', cat:'sks', cmd:'sk180488', desc:'How to collect a debug for VPN issues', ref:'https://support.checkpoint.com/results/sk/sk180488', tags:[], versions:[], notes:''},
+    {id:'sk4', cat:'sks', cmd:'sk164215', desc:'How to Detect and Handle Heavy Connections', ref:'https://support.checkpoint.com/results/sk/sk164215', tags:[], versions:[], notes:''},
+    {id:'sk5', cat:'sks', cmd:'sk159452', desc:'Policy Installation Debug Script', ref:'https://support.checkpoint.com/results/sk/sk159452', tags:[], versions:[], notes:''},
+    {id:'sk6', cat:'sks', cmd:'sk112334', desc:'How to debug SmartConsole / SmartDashboard', ref:'https://support.checkpoint.com/results/sk/sk112334', tags:[], versions:[], notes:''},
+    {id:'sk7', cat:'sks', cmd:'sk167213', desc:'VPN Traffic Flow in Maestro Security Group', ref:'https://support.checkpoint.com/results/sk/sk167213', tags:[], versions:[], notes:''},
+    {id:'sk8', cat:'sks', cmd:'sk73980',  desc:'Relative speeds of algorithms for IPsec and SSL', ref:'https://support.checkpoint.com/results/sk/sk73980', tags:[], versions:[], notes:''},
   ]
 };
 
 /* ══════════════════════════════════════
    STATE
 ══════════════════════════════════════ */
-var accessToken  = null;
-var driveFileId  = null;
-var db           = null; // { categories: [], commands: [] }
-var tokenClient  = null;
-var currentCat   = null;
+var accessToken   = null;
+var driveFileId   = null;
+var db            = null;
+var tokenClient   = null;
+var currentCat    = null;
 var pendingDelCat = null;
-var editingCmdId = null;
+var currentView   = 'card'; // 'card' | 'table'
+var verFilter     = 'all';
+var currentTags   = [];
+var copyHistory   = [];
+var historyOpen   = false;
 
 /* ══════════════════════════════════════
-   GOOGLE AUTH — persistent reconnect
+   THEME
+══════════════════════════════════════ */
+(function() {
+  var t = localStorage.getItem(THEME_KEY) || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  setTimeout(function() {
+    var btn = document.getElementById('themeBtn');
+    if (btn) btn.textContent = t === 'dark' ? '🌙' : '☀️';
+  }, 0);
+})();
+
+function toggleTheme() {
+  var curr = document.documentElement.getAttribute('data-theme');
+  var next = curr === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem(THEME_KEY, next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
+}
+
+/* ══════════════════════════════════════
+   COPY HISTORY
+══════════════════════════════════════ */
+function loadHistory() {
+  try { copyHistory = JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); } catch(e) { copyHistory = []; }
+}
+function saveHistory() {
+  try { localStorage.setItem(HIST_KEY, JSON.stringify(copyHistory.slice(0, 30))); } catch(e) {}
+}
+function addToHistory(cmd, cat) {
+  var catName = '';
+  if (db) { var c = db.categories.find(function(x){ return x.id===cat; }); if (c) catName = c.name; }
+  copyHistory.unshift({ cmd: cmd, cat: catName, time: Date.now() });
+  copyHistory = copyHistory.slice(0, 30);
+  saveHistory();
+  renderHistory();
+}
+function renderHistory() {
+  var body = document.getElementById('historyBody');
+  if (!body) return;
+  if (!copyHistory.length) {
+    body.innerHTML = '<div class="history-empty">Sin historial aún.<br>Los comandos copiados aparecerán aquí.</div>';
+    return;
+  }
+  body.innerHTML = copyHistory.map(function(item) {
+    var enc = encodeURIComponent(item.cmd);
+    var ago = timeAgo(item.time);
+    return '<div class="history-item" onclick="doCopy(this,decodeURIComponent(\'' + enc + '\'),\'\',true)">' +
+      '<span class="history-cat">' + esc(item.cat) + '</span>' +
+      '<div class="history-cmd">' + esc(item.cmd) + '</div>' +
+      '<div class="history-time">' + ago + '</div>' +
+    '</div>';
+  }).join('');
+}
+function clearHistory() { copyHistory = []; saveHistory(); renderHistory(); }
+function toggleHistory() {
+  historyOpen = !historyOpen;
+  document.getElementById('historyPanel').classList.toggle('open', historyOpen);
+  if (historyOpen) renderHistory();
+}
+function timeAgo(ts) {
+  var diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 60) return 'hace ' + diff + 's';
+  if (diff < 3600) return 'hace ' + Math.floor(diff/60) + 'min';
+  return 'hace ' + Math.floor(diff/3600) + 'h';
+}
+
+/* ══════════════════════════════════════
+   VERSION FILTER
+══════════════════════════════════════ */
+function setVerFilter(ver, btn) {
+  verFilter = ver;
+  document.querySelectorAll('.filter-pill.version').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  if (currentCat) renderSection(currentCat);
+}
+
+function matchesVerFilter(item) {
+  if (verFilter === 'all') return true;
+  if (!item.versions || !item.versions.length) return true; // no version = applies to all
+  return item.versions.indexOf(verFilter) > -1;
+}
+
+/* ══════════════════════════════════════
+   TAGS INPUT
+══════════════════════════════════════ */
+currentTags = [];
+document.addEventListener('DOMContentLoaded', function() {
+  var tagInput = document.getElementById('tagInput');
+  if (tagInput) {
+    tagInput.addEventListener('keydown', function(e) {
+      if ((e.key === 'Enter' || e.key === ',') && this.value.trim()) {
+        e.preventDefault();
+        addTag(this.value.trim().replace(',',''));
+        this.value = '';
+      }
+      if (e.key === 'Backspace' && !this.value && currentTags.length) {
+        removeTag(currentTags[currentTags.length-1]);
+      }
+    });
+  }
+});
+
+function addTag(tag) {
+  tag = tag.toLowerCase().replace(/\s+/g,'-');
+  if (!tag || currentTags.indexOf(tag) > -1) return;
+  currentTags.push(tag);
+  renderTagsInput();
+}
+function removeTag(tag) {
+  currentTags = currentTags.filter(function(t){ return t!==tag; });
+  renderTagsInput();
+}
+function renderTagsInput() {
+  var wrap = document.getElementById('tagsWrap');
+  var input = document.getElementById('tagInput');
+  if (!wrap || !input) return;
+  // Remove old chips
+  wrap.querySelectorAll('.tag-chip').forEach(function(c){ c.remove(); });
+  // Add chips before input
+  currentTags.forEach(function(tag) {
+    var chip = document.createElement('span');
+    chip.className = 'tag-chip';
+    chip.innerHTML = esc(tag) + '<span class="tag-chip-del" onclick="removeTag(\'' + esc(tag) + '\')">×</span>';
+    wrap.insertBefore(chip, input);
+  });
+}
+function toggleAllVer(cb) {
+  var vers = ['ver-r8110','ver-r8120','ver-r82'];
+  vers.forEach(function(id){ document.getElementById(id).checked = cb.checked; });
+}
+function getSelectedVersions() {
+  var vers = [];
+  var map = { 'ver-r8110':'R81.10', 'ver-r8120':'R81.20', 'ver-r82':'R82' };
+  Object.keys(map).forEach(function(id) {
+    if (document.getElementById(id) && document.getElementById(id).checked) vers.push(map[id]);
+  });
+  return vers;
+}
+function setVersionCheckboxes(versions) {
+  var map = { 'R81.10':'ver-r8110', 'R81.20':'ver-r8120', 'R82':'ver-r82' };
+  ['ver-r8110','ver-r8120','ver-r82'].forEach(function(id){ document.getElementById(id).checked = false; });
+  document.getElementById('ver-all').checked = false;
+  (versions||[]).forEach(function(v){ if(map[v]) document.getElementById(map[v]).checked = true; });
+}
+
+/* ══════════════════════════════════════
+   GOOGLE AUTH
 ══════════════════════════════════════ */
 function initGoogleAuth() {
   if (!window.google) { setTimeout(initGoogleAuth, 400); return; }
-
   tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    scope: SCOPES,
-    callback: onTokenResponse
+    client_id: CLIENT_ID, scope: SCOPES, callback: onTokenResponse
   });
-
-  // Auto silent reconnect if was connected before
-  var wasConnected = false;
-  try { wasConnected = localStorage.getItem(HINT_KEY) === '1'; } catch(e){}
-  if (wasConnected) {
-    setTimeout(function() {
-      if (!accessToken && tokenClient) {
-        tokenClient.requestAccessToken({ prompt: '' });
-      }
-    }, 600);
-  }
+  var was = false;
+  try { was = localStorage.getItem(HINT_KEY) === '1'; } catch(e){}
+  if (was) { setTimeout(function(){ if(!accessToken && tokenClient) tokenClient.requestAccessToken({prompt:''}); }, 600); }
 }
 
 function onTokenResponse(resp) {
   if (resp.error) {
-    if (resp.error === 'interaction_required' || resp.error === 'access_denied') {
-      // Silent reconnect failed — show connect button normally
-      // PWA Install prompt
-var _deferredInstall = null;
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  _deferredInstall = e;
-  var btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'block';
-});
-window.addEventListener('appinstalled', function() {
-  var btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'none';
-  _deferredInstall = null;
-  toast('📲 App instalada correctamente');
-});
-function installPWA() {
-  if (!_deferredInstall) return;
-  _deferredInstall.prompt();
-  _deferredInstall.userChoice.then(function(r) {
-    if (r.outcome === 'accepted') toast('📲 Instalando app...');
-    _deferredInstall = null;
-  });
-}
-
-showScreen('notConnected');
-      return;
-    }
-    toast('❌ Error Google: ' + resp.error, true);
-    return;
+    if (resp.error==='interaction_required'||resp.error==='access_denied') { showScreen('notConnected'); return; }
+    toast('❌ Error Google: ' + resp.error, true); return;
   }
   accessToken = resp.access_token;
-  try { localStorage.setItem(HINT_KEY, '1'); } catch(e){}
+  try { localStorage.setItem(HINT_KEY,'1'); } catch(e){}
   setAuthUI(true);
   showScreen('loading');
   loadFromDrive();
-
-  // Auto-refresh token before it expires (55 min)
-  setTimeout(function() {
-    if (accessToken && tokenClient) {
-      tokenClient.requestAccessToken({ prompt: '' });
-    }
-  }, 55 * 60 * 1000);
+  setTimeout(function(){ if(accessToken&&tokenClient) tokenClient.requestAccessToken({prompt:''}); }, 55*60*1000);
 }
 
 function handleAuth() {
   if (accessToken) {
     google.accounts.oauth2.revoke(accessToken, function(){});
-    accessToken = null; driveFileId = null; db = null;
+    accessToken=null; driveFileId=null; db=null;
     try { localStorage.removeItem(HINT_KEY); } catch(e){}
-    setAuthUI(false);
-    // PWA Install prompt
-var _deferredInstall = null;
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  _deferredInstall = e;
-  var btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'block';
-});
-window.addEventListener('appinstalled', function() {
-  var btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'none';
-  _deferredInstall = null;
-  toast('📲 App instalada correctamente');
-});
-function installPWA() {
-  if (!_deferredInstall) return;
-  _deferredInstall.prompt();
-  _deferredInstall.userChoice.then(function(r) {
-    if (r.outcome === 'accepted') toast('📲 Instalando app...');
-    _deferredInstall = null;
-  });
-}
-
-showScreen('notConnected');
-    toast('👋 Sesión cerrada');
+    setAuthUI(false); showScreen('notConnected'); toast('👋 Sesión cerrada');
   } else {
-    if (!tokenClient) { setTimeout(handleAuth, 600); return; }
-    tokenClient.requestAccessToken({ prompt: 'select_account' });
+    if (!tokenClient) { setTimeout(handleAuth,600); return; }
+    tokenClient.requestAccessToken({prompt:'select_account'});
   }
 }
 
 function setAuthUI(connected) {
-  var dot = document.getElementById('authDot');
-  var lbl = document.getElementById('authLabel');
-  var btn = document.getElementById('authBtn');
+  var dot=document.getElementById('authDot'), lbl=document.getElementById('authLabel'), btn=document.getElementById('authBtn');
   if (connected) {
-    dot.className = 'auth-dot connected';
-    lbl.className = 'auth-label connected';
-    lbl.textContent = 'Drive conectado';
-    btn.className = 'btn-auth btn-signout';
-    btn.textContent = 'Desconectar';
+    dot.className='auth-dot connected'; lbl.className='auth-label connected'; lbl.textContent='Drive conectado';
+    btn.className='btn-auth btn-signout'; btn.textContent='Desconectar';
   } else {
-    dot.className = 'auth-dot';
-    lbl.className = 'auth-label';
-    lbl.textContent = 'Sin conectar';
-    btn.className = 'btn-auth btn-signin';
-    btn.textContent = 'Conectar Drive';
+    dot.className='auth-dot'; lbl.className='auth-label'; lbl.textContent='Sin conectar';
+    btn.className='btn-auth btn-signin'; btn.textContent='Conectar Drive';
   }
 }
-
 function setSyncing(on) {
-  var dot = document.getElementById('authDot');
-  dot.className = on ? 'auth-dot syncing' : (accessToken ? 'auth-dot connected' : 'auth-dot');
+  var dot=document.getElementById('authDot');
+  dot.className = on ? 'auth-dot syncing' : (accessToken?'auth-dot connected':'auth-dot');
 }
-
 function showScreen(name) {
-  document.getElementById('notConnected').style.display  = name==='notConnected' ? 'flex' : 'none';
-  document.getElementById('loadingScreen').style.display = name==='loading' ? 'flex' : 'none';
-  document.getElementById('appContent').style.display    = name==='app' ? 'block' : 'none';
+  document.getElementById('notConnected').style.display  = name==='notConnected'?'flex':'none';
+  document.getElementById('loadingScreen').style.display = name==='loading'?'flex':'none';
+  document.getElementById('appContent').style.display    = name==='app'?'block':'none';
 }
 
 /* ══════════════════════════════════════
    DRIVE API
 ══════════════════════════════════════ */
-function driveReq(method, url, body, contentType) {
-  return new Promise(function(res, rej) {
-    var xhr = new XMLHttpRequest();
-    xhr.open(method, url);
-    xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-    if (contentType) xhr.setRequestHeader('Content-Type', contentType);
-    xhr.onload = function() {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try { res(JSON.parse(xhr.responseText)); } catch(e) { res(xhr.responseText); }
-      } else { rej(xhr.status + ': ' + xhr.responseText); }
-    };
-    xhr.onerror = function() { rej('Network error'); };
-    xhr.send(body || null);
+function driveReq(method,url,body,ct) {
+  return new Promise(function(res,rej){
+    var xhr=new XMLHttpRequest(); xhr.open(method,url);
+    xhr.setRequestHeader('Authorization','Bearer '+accessToken);
+    if(ct) xhr.setRequestHeader('Content-Type',ct);
+    xhr.onload=function(){ if(xhr.status<300){try{res(JSON.parse(xhr.responseText));}catch(e){res(xhr.responseText);}}else{rej(xhr.status);}};
+    xhr.onerror=function(){rej('Network error');}; xhr.send(body||null);
   });
 }
-
 function findFile() {
-  var q = encodeURIComponent("name='" + DRIVE_FILE + "' and trashed=false");
-  return driveReq('GET', 'https://www.googleapis.com/drive/v3/files?q=' + q + '&fields=files(id)');
+  return driveReq('GET','https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent("name='"+DRIVE_FILE+"' and trashed=false")+'&fields=files(id)');
 }
-
-function readFile(id) {
-  return driveReq('GET', 'https://www.googleapis.com/drive/v3/files/' + id + '?alt=media');
-}
-
+function readFile(id) { return driveReq('GET','https://www.googleapis.com/drive/v3/files/'+id+'?alt=media'); }
 function createFile(data) {
-  var boundary = 'safeid_b';
-  var meta = JSON.stringify({ name: DRIVE_FILE, mimeType: 'application/json' });
-  var body = '--' + boundary + '\r\nContent-Type: application/json\r\n\r\n' + meta +
-             '\r\n--' + boundary + '\r\nContent-Type: application/json\r\n\r\n' +
-             JSON.stringify(data) + '\r\n--' + boundary + '--';
-  return new Promise(function(res, rej) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id');
-    xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-    xhr.setRequestHeader('Content-Type', 'multipart/related; boundary=' + boundary);
-    xhr.onload = function() { xhr.status < 300 ? res(JSON.parse(xhr.responseText)) : rej(xhr.responseText); };
-    xhr.onerror = function() { rej('Network error'); };
-    xhr.send(body);
+  var b='safeid_b', meta=JSON.stringify({name:DRIVE_FILE,mimeType:'application/json'});
+  var body='--'+b+'\r\nContent-Type: application/json\r\n\r\n'+meta+'\r\n--'+b+'\r\nContent-Type: application/json\r\n\r\n'+JSON.stringify(data)+'\r\n--'+b+'--';
+  return new Promise(function(res,rej){
+    var xhr=new XMLHttpRequest(); xhr.open('POST','https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id');
+    xhr.setRequestHeader('Authorization','Bearer '+accessToken);
+    xhr.setRequestHeader('Content-Type','multipart/related; boundary='+b);
+    xhr.onload=function(){xhr.status<300?res(JSON.parse(xhr.responseText)):rej(xhr.responseText);};
+    xhr.onerror=function(){rej('Network error');}; xhr.send(body);
   });
 }
-
-function updateFile(id, data) {
-  return new Promise(function(res, rej) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('PATCH', 'https://www.googleapis.com/upload/drive/v3/files/' + id + '?uploadType=media');
-    xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onload = function() { xhr.status < 300 ? res() : rej(xhr.responseText); };
-    xhr.onerror = function() { rej('Network error'); };
+function updateFile(id,data) {
+  return new Promise(function(res,rej){
+    var xhr=new XMLHttpRequest(); xhr.open('PATCH','https://www.googleapis.com/upload/drive/v3/files/'+id+'?uploadType=media');
+    xhr.setRequestHeader('Authorization','Bearer '+accessToken); xhr.setRequestHeader('Content-Type','application/json');
+    xhr.onload=function(){xhr.status<300?res():rej(xhr.responseText);}; xhr.onerror=function(){rej('Network error');};
     xhr.send(JSON.stringify(data));
   });
 }
@@ -662,103 +830,61 @@ function updateFile(id, data) {
 ══════════════════════════════════════ */
 function loadFromDrive() {
   setSyncing(true);
-  findFile().then(function(res) {
-    if (res.files && res.files.length > 0) {
-      driveFileId = res.files[0].id;
-      return readFile(driveFileId).then(function(data) {
-        db = (data && data.categories) ? data : DEFAULT_DB;
-        // Merge: add any missing default commands (for updates)
-        initApp();
-        toast('☁️ ' + db.commands.length + ' comandos cargados');
+  findFile().then(function(res){
+    if(res.files&&res.files.length>0){
+      driveFileId=res.files[0].id;
+      return readFile(driveFileId).then(function(data){
+        db=(data&&data.categories)?data:JSON.parse(JSON.stringify(DEFAULT_DB));
+        // Ensure all commands have new fields
+        db.commands.forEach(function(c){
+          if(!c.tags) c.tags=[];
+          if(!c.versions) c.versions=[];
+          if(!c.notes) c.notes='';
+        });
+        initApp(); setSyncing(false);
+        toast('☁️ '+db.commands.length+' comandos cargados');
       });
     } else {
-      db = JSON.parse(JSON.stringify(DEFAULT_DB));
-      return createFile(db).then(function(r) {
-        driveFileId = r.id;
-        initApp();
-        toast('☁️ Base de datos creada en Drive');
-      });
+      db=JSON.parse(JSON.stringify(DEFAULT_DB));
+      return createFile(db).then(function(r){ driveFileId=r.id; initApp(); setSyncing(false); toast('☁️ Base de datos creada'); });
     }
-  }).catch(function(e) {
-    console.error(e);
-    toast('❌ Error al cargar Drive', true);
-    // PWA Install prompt
-var _deferredInstall = null;
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  _deferredInstall = e;
-  var btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'block';
-});
-window.addEventListener('appinstalled', function() {
-  var btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'none';
-  _deferredInstall = null;
-  toast('📲 App instalada correctamente');
-});
-function installPWA() {
-  if (!_deferredInstall) return;
-  _deferredInstall.prompt();
-  _deferredInstall.userChoice.then(function(r) {
-    if (r.outcome === 'accepted') toast('📲 Instalando app...');
-    _deferredInstall = null;
-  });
+  }).catch(function(e){ setSyncing(false); toast('❌ Error al cargar Drive',true); showScreen('notConnected'); console.error(e); });
 }
 
-showScreen('notConnected');
-  }).finally ? void 0 : void 0;
-  // .finally polyfill
-  Promise.resolve().then(function(){ setSyncing(false); });
-}
-
+var _saveTimer = null;
 function saveToDrive() {
-  if (!accessToken || !driveFileId || !db) return;
-  setSyncing(true);
-  updateFile(driveFileId, db).then(function() {
-    setSyncing(false);
-  }).catch(function(e) {
-    setSyncing(false);
-    toast('❌ Error al guardar', true);
-    console.error(e);
-  });
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(function(){
+    if(!accessToken||!driveFileId||!db) return;
+    setSyncing(true);
+    updateFile(driveFileId,db).then(function(){ setSyncing(false); }).catch(function(e){ setSyncing(false); toast('❌ Error al guardar',true); });
+  }, 800);
 }
 
 /* ══════════════════════════════════════
    APP INIT
 ══════════════════════════════════════ */
 function initApp() {
-  showScreen('app');
-  setSyncing(false);
-  buildNav();
-  if (db.categories.length > 0) {
-    showCategory(db.categories[0].id);
-  }
+  showScreen('app'); buildNav();
+  if(db.categories.length>0) showCategory(db.categories[0].id);
 }
 
 /* ══════════════════════════════════════
    NAV
 ══════════════════════════════════════ */
 function buildNav() {
-  var nav = document.getElementById('navTabs');
-  nav.innerHTML = '';
-  db.categories.forEach(function(cat) {
-    var btn = document.createElement('button');
-    btn.className = 'nav-tab' + (cat.id === currentCat ? ' active' : '');
-    btn.textContent = (cat.icon ? cat.icon + ' ' : '') + cat.name;
-    btn.onclick = function() { showCategory(cat.id); };
-    nav.appendChild(btn);
+  var nav=document.getElementById('navTabs'); nav.innerHTML='';
+  db.categories.forEach(function(cat){
+    var btn=document.createElement('button'); btn.className='nav-tab'+(cat.id===currentCat?' active':'');
+    btn.textContent=(cat.icon?cat.icon+' ':'')+cat.name;
+    btn.onclick=function(){ showCategory(cat.id); }; nav.appendChild(btn);
   });
 }
-
 function showCategory(catId) {
-  currentCat = catId;
-  // Update nav active
-  var tabs = document.querySelectorAll('.nav-tab');
-  tabs.forEach(function(t, i) { t.classList.toggle('active', db.categories[i] && db.categories[i].id === catId); });
-  // Hide search
+  currentCat=catId;
+  document.querySelectorAll('.nav-tab').forEach(function(t,i){ t.classList.toggle('active',db.categories[i]&&db.categories[i].id===catId); });
   document.getElementById('searchResults').classList.remove('active');
-  document.getElementById('searchInput').value = '';
-  // Render section
+  document.getElementById('searchInput').value='';
   renderSection(catId);
 }
 
@@ -766,272 +892,310 @@ function showCategory(catId) {
    RENDER SECTION
 ══════════════════════════════════════ */
 function renderSection(catId) {
-  var cat  = db.categories.find(function(c){ return c.id === catId; });
-  var cmds = db.commands.filter(function(c){ return c.cat === catId; });
-  var el   = document.getElementById('sectionContent');
-  if (!cat) { el.innerHTML = ''; return; }
+  var cat=db.categories.find(function(c){return c.id===catId;});
+  var allCmds=db.commands.filter(function(c){return c.cat===catId;});
+  var cmds=allCmds.filter(matchesVerFilter);
+  var el=document.getElementById('sectionContent');
+  if(!cat){el.innerHTML='';return;}
+  var isSKs=catId==='sks';
+  var isProtected=['quantum','tools','vpn','unix','maestro','identity','upgrade','sks'].indexOf(catId)>-1;
 
-  var isSKs = catId === 'sks';
-
-  var html = '<div class="section-header">' +
-    '<div class="section-header-left">' +
-      '<div class="section-icon">' + (cat.icon||'📁') + '</div>' +
-      '<div><div class="section-title">' + esc(cat.name) + '</div>' +
-      '<div class="section-desc">' + cmds.length + ' comando(s)</div></div>' +
-    '</div>' +
-    '<div class="section-actions">' +
-      '<button class="btn btn-green" onclick="openAddCmdModal(\'' + catId + '\')">➕ Agregar</button>' +
-      (cat.id !== 'quantum' && cat.id !== 'tools' && cat.id !== 'vpn' && cat.id !== 'unix' && cat.id !== 'maestro' && cat.id !== 'identity' && cat.id !== 'upgrade' && cat.id !== 'sks'
-        ? '<button class="btn btn-red" onclick="openDelCatModal(\'' + catId + '\')">🗑️ Eliminar categoría</button>' : '') +
-    '</div>' +
+  var html='<div class="section-header">'+
+    '<div class="section-header-left">'+
+      '<div class="section-icon">'+(cat.icon||'📁')+'</div>'+
+      '<div><div class="section-title">'+esc(cat.name)+'</div>'+
+      '<div class="section-meta">'+cmds.length+(cmds.length!==allCmds.length?' / '+allCmds.length:'')+' comando(s)</div></div>'+
+    '</div>'+
+    '<div class="section-actions">'+
+      '<div class="view-toggle">'+
+        '<button class="view-btn'+(currentView==='card'?' active':'') +'" onclick="setView(\'card\')" title="Vista cards">▦</button>'+
+        '<button class="view-btn'+(currentView==='table'?' active':'')+'" onclick="setView(\'table\')" title="Vista tabla">☰</button>'+
+      '</div>'+
+      '<button class="btn btn-green" onclick="openAddCmdModal(\''+catId+'\')">➕ Agregar</button>'+
+      (!isProtected?'<button class="btn btn-red" onclick="openDelCatModal(\''+catId+'\')">🗑️</button>':'')+
+    '</div>'+
   '</div>';
 
-  if (cmds.length === 0) {
-    html += '<div class="empty-state"><div class="empty-icon">📭</div>' +
-      '<div class="empty-title">Sin comandos</div>' +
-      '<div class="empty-desc">Agrega el primer comando con el botón de arriba.</div></div>';
+  if(cmds.length===0){
+    html+='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Sin comandos</div><div class="empty-desc">Agrega el primero con el botón ➕</div></div>';
+  } else if(currentView==='table'&&!isSKs) {
+    html+='<div style="overflow-x:auto;"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Tags / Ver</th><th>Acciones</th></tr></thead><tbody>';
+    cmds.forEach(function(item){
+      var enc=encodeURIComponent(item.cmd);
+      var metaHtml='';
+      (item.tags||[]).forEach(function(t){metaHtml+='<span class="cmd-tag">'+esc(t)+'</span> ';});
+      (item.versions||[]).forEach(function(v){metaHtml+='<span class="cmd-ver">'+esc(v)+'</span> ';});
+      html+='<tr>'+
+        '<td>'+esc(item.cmd)+(item.ref?'<br><span class="cmd-ref">📎 '+esc(item.ref)+'</span>':'')+'</td>'+
+        '<td>'+esc(item.desc)+(item.notes?'<br><em style="font-size:11px;color:var(--muted)">'+esc(item.notes)+'</em>':'')+'</td>'+
+        '<td style="min-width:100px;">'+metaHtml+'</td>'+
+        '<td><div class="tbl-actions">'+
+          '<button class="copy-btn" onclick="doCopy(this,decodeURIComponent(\''+enc+'\'),\''+catId+'\')">COPIAR</button>'+
+          '<button class="edit-btn" onclick="openEditCmdModal(\''+item.id+'\')">✏️</button>'+
+          '<button class="del-btn" onclick="deleteCmd(\''+item.id+'\')">🗑</button>'+
+        '</div></td>'+
+      '</tr>';
+    });
+    html+='</tbody></table></div>';
   } else {
-    html += '<div class="cmd-grid">';
-    cmds.forEach(function(item) {
-      if (isSKs && item.ref) {
-        // SK style
-        html += '<a class="sk-card" href="' + esc(item.ref) + '" target="_blank">' +
-          '<div><div class="sk-id">' + esc(item.cmd) + '</div><div class="sk-desc">' + esc(item.desc) + '</div></div>' +
-          '<div style="display:flex;gap:5px;align-items:center;">' +
-            '<button class="edit-btn" onclick="event.preventDefault();openEditCmdModal(\'' + item.id + '\')">✏️</button>' +
-            '<button class="del-btn" onclick="event.preventDefault();deleteCmd(\'' + item.id + '\')">🗑</button>' +
-            '<span class="sk-arrow">↗</span>' +
-          '</div>' +
-        '</a>';
+    html+='<div class="cmd-grid">';
+    cmds.forEach(function(item){
+      if(isSKs&&item.ref){
+        html+='<a class="sk-card" href="'+esc(item.ref)+'" target="_blank">'+
+          '<div><div class="sk-id">'+esc(item.cmd)+'</div><div class="sk-desc">'+esc(item.desc)+'</div></div>'+
+          '<div style="display:flex;gap:4px;align-items:center;">'+
+            '<button class="edit-btn" onclick="event.preventDefault();openEditCmdModal(\''+item.id+'\')">✏️</button>'+
+            '<button class="del-btn" onclick="event.preventDefault();deleteCmd(\''+item.id+'\')">🗑</button>'+
+            '<span class="sk-arrow">↗</span>'+
+          '</div></a>';
       } else {
-        var enc = encodeURIComponent(item.cmd);
-        html += '<div class="cmd-card">' +
-          '<div>' +
-            '<div class="cmd-text">' + esc(item.cmd) + '</div>' +
-            '<div class="cmd-desc">' + esc(item.desc) + '</div>' +
-            (item.ref ? '<div class="cmd-ref">📎 ' + esc(item.ref) + '</div>' : '') +
-            (item.notes ? '<div class="cmd-notes">💬 ' + esc(item.notes) + '</div>' : '') +
-            (item.notes ? '<div class="cmd-notes">💬 ' + esc(item.notes) + '</div>' : '') +
-          '</div>' +
-          '<div class="card-actions">' +
-            '<button class="copy-btn" onclick="doCopy(this,decodeURIComponent(\'' + enc + '\'))">COPIAR</button>' +
-            '<button class="edit-btn" onclick="openEditCmdModal(\'' + item.id + '\')">✏️</button>' +
-            '<button class="del-btn" onclick="deleteCmd(\'' + item.id + '\')">🗑</button>' +
-          '</div>' +
+        var enc=encodeURIComponent(item.cmd);
+        var metaHtml='';
+        if(item.ref) metaHtml+='<span class="cmd-ref">📎 '+esc(item.ref)+'</span>';
+        (item.tags||[]).forEach(function(t){metaHtml+='<span class="cmd-tag">'+esc(t)+'</span>';});
+        (item.versions||[]).forEach(function(v){metaHtml+='<span class="cmd-ver">'+esc(v)+'</span>';});
+        html+='<div class="cmd-card">'+
+          '<div>'+
+            '<div class="cmd-text">'+esc(item.cmd)+'</div>'+
+            '<div class="cmd-desc">'+esc(item.desc)+'</div>'+
+            (metaHtml?'<div class="cmd-meta">'+metaHtml+'</div>':'')+
+            (item.notes?'<div class="cmd-notes">💬 '+esc(item.notes)+'</div>':'')+
+          '</div>'+
+          '<div class="card-actions">'+
+            '<button class="copy-btn" onclick="doCopy(this,decodeURIComponent(\''+enc+'\'),\''+catId+'\')">COPIAR</button>'+
+            '<button class="edit-btn" onclick="openEditCmdModal(\''+item.id+'\')">✏️</button>'+
+            '<button class="del-btn" onclick="deleteCmd(\''+item.id+'\')">🗑</button>'+
+          '</div>'+
         '</div>';
       }
     });
-    html += '</div>';
+    html+='</div>';
   }
-
-  el.innerHTML = html;
+  el.innerHTML=html;
 }
+
+function setView(v) { currentView=v; renderSection(currentCat); }
 
 /* ══════════════════════════════════════
    CMD MODAL
 ══════════════════════════════════════ */
 function openAddCmdModal(catId) {
-  editingCmdId = null;
-  document.getElementById('cmdModalTitle').textContent = '➕ Agregar comando';
-  document.getElementById('cmd-input').value = '';
-  document.getElementById('cmd-desc').value  = '';
-  document.getElementById('cmd-ref').value   = '';
-  document.getElementById('cmd-notes').value = '';
-  document.getElementById('cmd-edit-id').value  = '';
-  document.getElementById('cmd-edit-cat').value = catId;
-  populateCatSelect('cmd-cat', catId);
+  document.getElementById('cmdModalTitle').textContent='➕ Agregar comando';
+  document.getElementById('cmd-input').value='';
+  document.getElementById('cmd-desc').value='';
+  document.getElementById('cmd-ref').value='';
+  document.getElementById('cmd-notes').value='';
+  document.getElementById('cmd-edit-id').value='';
+  currentTags=[]; renderTagsInput();
+  setVersionCheckboxes([]);
+  populateCatSelect('cmd-cat',catId);
   document.getElementById('cmdModal').classList.add('open');
+  setTimeout(function(){document.getElementById('cmd-input').focus();},100);
 }
-
 function openEditCmdModal(cmdId) {
-  var item = db.commands.find(function(c){ return c.id === cmdId; });
-  if (!item) return;
-  editingCmdId = cmdId;
-  document.getElementById('cmdModalTitle').textContent = '✏️ Editar comando';
-  document.getElementById('cmd-input').value = item.cmd;
-  document.getElementById('cmd-desc').value  = item.desc;
-  document.getElementById('cmd-ref').value   = item.ref || '';
-  document.getElementById('cmd-notes').value = item.notes || '';
-  document.getElementById('cmd-edit-id').value  = cmdId;
-  document.getElementById('cmd-edit-cat').value = item.cat;
-  populateCatSelect('cmd-cat', item.cat);
+  var item=db.commands.find(function(c){return c.id===cmdId;});
+  if(!item) return;
+  document.getElementById('cmdModalTitle').textContent='✏️ Editar comando';
+  document.getElementById('cmd-input').value=item.cmd;
+  document.getElementById('cmd-desc').value=item.desc;
+  document.getElementById('cmd-ref').value=item.ref||'';
+  document.getElementById('cmd-notes').value=item.notes||'';
+  document.getElementById('cmd-edit-id').value=cmdId;
+  currentTags=(item.tags||[]).slice(); renderTagsInput();
+  setVersionCheckboxes(item.versions||[]);
+  populateCatSelect('cmd-cat',item.cat);
   document.getElementById('cmdModal').classList.add('open');
 }
-
-function populateCatSelect(selectId, selectedCat) {
-  var sel = document.getElementById(selectId);
-  sel.innerHTML = '';
-  db.categories.forEach(function(cat) {
-    var opt = document.createElement('option');
-    opt.value = cat.id;
-    opt.textContent = (cat.icon||'') + ' ' + cat.name;
-    if (cat.id === selectedCat) opt.selected = true;
-    sel.appendChild(opt);
+function populateCatSelect(selId,selected) {
+  var sel=document.getElementById(selId); sel.innerHTML='';
+  db.categories.forEach(function(cat){
+    var opt=document.createElement('option'); opt.value=cat.id;
+    opt.textContent=(cat.icon||'')+' '+cat.name;
+    if(cat.id===selected) opt.selected=true; sel.appendChild(opt);
   });
 }
-
 function saveCmd() {
-  var cmd  = (document.getElementById('cmd-input').value||'').trim();
-  var desc = (document.getElementById('cmd-desc').value||'').trim();
-  var cat  = document.getElementById('cmd-cat').value;
-  var ref  = (document.getElementById('cmd-ref').value||'').trim();
-  if (!cmd || !desc) { toast('⚠️ Comando y descripción son obligatorios'); return; }
-
-  var notes = (document.getElementById('cmd-notes').value||'').trim();
-  var id = document.getElementById('cmd-edit-id').value;
-  if (id) {
-    // Edit
-    db.commands = db.commands.map(function(c) {
-      return c.id === id ? Object.assign({}, c, {cmd:cmd, desc:desc, cat:cat, ref:ref, notes:notes}) : c;
-    });
-    toast('✏️ Comando actualizado');
+  var cmd=(document.getElementById('cmd-input').value||'').trim();
+  var desc=(document.getElementById('cmd-desc').value||'').trim();
+  var cat=document.getElementById('cmd-cat').value;
+  var ref=(document.getElementById('cmd-ref').value||'').trim();
+  var notes=(document.getElementById('cmd-notes').value||'').trim();
+  var versions=getSelectedVersions();
+  var tags=currentTags.slice();
+  if(!cmd||!desc){toast('⚠️ Comando y descripción son obligatorios');return;}
+  var id=document.getElementById('cmd-edit-id').value;
+  if(id){
+    db.commands=db.commands.map(function(c){ return c.id===id?Object.assign({},c,{cmd:cmd,desc:desc,cat:cat,ref:ref,notes:notes,tags:tags,versions:versions}):c; });
+    toast('✏️ Actualizado');
   } else {
-    // Add
-    db.commands.push({ id: 'c_' + Date.now(), cmd:cmd, desc:desc, cat:cat, ref:ref, notes:notes });
-    toast('✅ Comando guardado');
+    db.commands.push({id:'c_'+Date.now(),cmd:cmd,desc:desc,cat:cat,ref:ref,notes:notes,tags:tags,versions:versions});
+    toast('✅ Guardado');
   }
-
-  closeCmdModal();
-  currentCat = cat;
-  buildNav();
-  renderSection(cat);
-  saveToDrive();
+  closeCmdModal(); currentCat=cat; buildNav(); renderSection(cat); saveToDrive();
 }
-
 function deleteCmd(cmdId) {
-  db.commands = db.commands.filter(function(c){ return c.id !== cmdId; });
-  renderSection(currentCat);
-  saveToDrive();
-  toast('🗑️ Comando eliminado');
+  db.commands=db.commands.filter(function(c){return c.id!==cmdId;});
+  renderSection(currentCat); saveToDrive(); toast('🗑️ Eliminado');
 }
-
-function closeCmdModal() { document.getElementById('cmdModal').classList.remove('open'); }
+function closeCmdModal(){document.getElementById('cmdModal').classList.remove('open');}
 
 /* ══════════════════════════════════════
    CATEGORY MODAL
 ══════════════════════════════════════ */
-function openCatModal() {
-  document.getElementById('cat-name').value = '';
-  document.getElementById('cat-icon').value = '';
+function openCatModal(){
+  document.getElementById('cat-name').value=''; document.getElementById('cat-icon').value='';
   document.getElementById('catModal').classList.add('open');
-  setTimeout(function(){ document.getElementById('cat-name').focus(); }, 100);
+  setTimeout(function(){document.getElementById('cat-name').focus();},100);
 }
-
-function closeCatModal() { document.getElementById('catModal').classList.remove('open'); }
-
-function saveCategory() {
-  var name = (document.getElementById('cat-name').value||'').trim();
-  var icon = (document.getElementById('cat-icon').value||'').trim();
-  if (!name) { toast('⚠️ El nombre es obligatorio'); return; }
-  var id = 'cat_' + Date.now();
-  db.categories.push({ id:id, name:name, icon:icon||'📁' });
-  closeCatModal();
-  buildNav();
-  showCategory(id);
-  saveToDrive();
-  toast('🗂️ Categoría "' + name + '" creada');
+function closeCatModal(){document.getElementById('catModal').classList.remove('open');}
+function saveCategory(){
+  var name=(document.getElementById('cat-name').value||'').trim();
+  var icon=(document.getElementById('cat-icon').value||'').trim();
+  if(!name){toast('⚠️ Nombre obligatorio');return;}
+  var id='cat_'+Date.now();
+  db.categories.push({id:id,name:name,icon:icon||'📁'});
+  closeCatModal(); buildNav(); showCategory(id); saveToDrive(); toast('🗂️ "'+name+'" creada');
 }
-
-/* ══════════════════════════════════════
-   DELETE CATEGORY
-══════════════════════════════════════ */
-function openDelCatModal(catId) {
-  var cat = db.categories.find(function(c){ return c.id===catId; });
-  if (!cat) return;
-  pendingDelCat = catId;
-  document.getElementById('delCatName').textContent = (cat.icon||'') + ' ' + cat.name;
+function openDelCatModal(catId){
+  var cat=db.categories.find(function(c){return c.id===catId;});
+  if(!cat) return;
+  pendingDelCat=catId;
+  document.getElementById('delCatName').textContent=(cat.icon||'')+' '+cat.name;
   document.getElementById('delCatModal').classList.add('open');
 }
-
-function closeDelCatModal() { document.getElementById('delCatModal').classList.remove('open'); pendingDelCat = null; }
-
-function confirmDelCat() {
-  if (!pendingDelCat) return;
-  db.categories = db.categories.filter(function(c){ return c.id !== pendingDelCat; });
-  db.commands   = db.commands.filter(function(c){ return c.cat !== pendingDelCat; });
-  closeDelCatModal();
-  buildNav();
-  if (db.categories.length > 0) showCategory(db.categories[0].id);
-  else document.getElementById('sectionContent').innerHTML = '';
-  saveToDrive();
-  toast('🗑️ Categoría eliminada');
+function closeDelCatModal(){document.getElementById('delCatModal').classList.remove('open');pendingDelCat=null;}
+function confirmDelCat(){
+  if(!pendingDelCat) return;
+  db.categories=db.categories.filter(function(c){return c.id!==pendingDelCat;});
+  db.commands=db.commands.filter(function(c){return c.cat!==pendingDelCat;});
+  closeDelCatModal(); buildNav();
+  if(db.categories.length>0) showCategory(db.categories[0].id);
+  else document.getElementById('sectionContent').innerHTML='';
+  saveToDrive(); toast('🗑️ Categoría eliminada');
 }
 
 /* ══════════════════════════════════════
    SEARCH
 ══════════════════════════════════════ */
 function handleSearch(val) {
-  var q = val.trim().toLowerCase();
-  if (!q || !db) {
+  var q=val.trim().toLowerCase();
+  if(!q||!db){
     document.getElementById('searchResults').classList.remove('active');
-    if (currentCat) renderSection(currentCat);
-    return;
+    if(currentCat) renderSection(currentCat); return;
   }
   document.getElementById('searchResults').classList.add('active');
-  document.getElementById('sectionContent').innerHTML = '';
+  document.getElementById('sectionContent').innerHTML='';
+  var results=db.commands.filter(function(c){
+    return (c.cmd||'').toLowerCase().includes(q)||(c.desc||'').toLowerCase().includes(q)||
+           (c.ref||'').toLowerCase().includes(q)||(c.notes||'').toLowerCase().includes(q)||
+           (c.tags||[]).some(function(t){return t.toLowerCase().includes(q);});
+  }).filter(matchesVerFilter);
 
-  var results = db.commands.filter(function(c) {
-    return (c.cmd||'').toLowerCase().includes(q) ||
-           (c.desc||'').toLowerCase().includes(q) ||
-           (c.ref||'').toLowerCase().includes(q);
-  });
-
-  var html = '';
-  if (results.length === 0) {
-    html = '<div class="no-results">🔍 Sin resultados para "' + esc(val) + '"</div>';
-  } else {
-    // Group by category
-    db.categories.forEach(function(cat) {
-      var catResults = results.filter(function(c){ return c.cat === cat.id; });
-      if (!catResults.length) return;
-      html += '<div class="subsection">' + (cat.icon||'') + ' ' + esc(cat.name) + ' — ' + catResults.length + '</div>';
-      html += '<div class="cmd-grid">';
-      catResults.forEach(function(item) {
-        var enc = encodeURIComponent(item.cmd);
-        html += '<div class="cmd-card">' +
-          '<div>' +
-            '<div class="cmd-text">' + esc(item.cmd) + '</div>' +
-            '<div class="cmd-desc">' + esc(item.desc) + '</div>' +
-            (item.ref ? '<div class="cmd-ref">📎 ' + esc(item.ref) + '</div>' : '') +
-            (item.notes ? '<div class="cmd-notes">💬 ' + esc(item.notes) + '</div>' : '') +
-          '</div>' +
-          '<div class="card-actions">' +
-            '<button class="copy-btn" onclick="doCopy(this,decodeURIComponent(\'' + enc + '\'))">COPIAR</button>' +
-            '<button class="edit-btn" onclick="openEditCmdModal(\'' + item.id + '\')">✏️</button>' +
-            '<button class="del-btn" onclick="deleteCmd(\'' + item.id + '\')">🗑</button>' +
-          '</div>' +
-        '</div>';
+  var html='';
+  if(!results.length){html='<div class="no-results">🔍 Sin resultados para "'+esc(val)+'"</div>';}
+  else {
+    html='<div class="subsection">'+results.length+' resultado(s) para "'+esc(val)+'"</div>';
+    db.categories.forEach(function(cat){
+      var cr=results.filter(function(c){return c.cat===cat.id;});
+      if(!cr.length) return;
+      html+='<div class="subsection" style="margin-top:14px;">'+(cat.icon||'')+' '+esc(cat.name)+' — '+cr.length+'</div>';
+      html+='<div class="cmd-grid">';
+      cr.forEach(function(item){
+        var enc=encodeURIComponent(item.cmd);
+        var metaHtml='';
+        if(item.ref) metaHtml+='<span class="cmd-ref">📎 '+esc(item.ref)+'</span>';
+        (item.tags||[]).forEach(function(t){metaHtml+='<span class="cmd-tag">'+esc(t)+'</span>';});
+        (item.versions||[]).forEach(function(v){metaHtml+='<span class="cmd-ver">'+esc(v)+'</span>';});
+        html+='<div class="cmd-card">'+
+          '<div><div class="cmd-text">'+esc(item.cmd)+'</div><div class="cmd-desc">'+esc(item.desc)+'</div>'+
+          (metaHtml?'<div class="cmd-meta">'+metaHtml+'</div>':'')+
+          (item.notes?'<div class="cmd-notes">💬 '+esc(item.notes)+'</div>':'')+
+          '</div>'+
+          '<div class="card-actions">'+
+            '<button class="copy-btn" onclick="doCopy(this,decodeURIComponent(\''+enc+'\'),\''+cat.id+'\')">COPIAR</button>'+
+            '<button class="edit-btn" onclick="openEditCmdModal(\''+item.id+'\')">✏️</button>'+
+          '</div></div>';
       });
-      html += '</div>';
+      html+='</div>';
     });
   }
-  document.getElementById('searchContent').innerHTML = html;
+  document.getElementById('searchContent').innerHTML=html;
 }
 
 /* ══════════════════════════════════════
    COPY
 ══════════════════════════════════════ */
-function doCopy(btn, cmd) {
-  function ok() {
-    var o = btn.textContent; btn.textContent = '✓ OK'; btn.classList.add('copied');
-    setTimeout(function(){ btn.textContent = o; btn.classList.remove('copied'); }, 1800);
+function doCopy(btn, cmd, cat, fromHistory) {
+  function ok(){
+    var o=btn.textContent; btn.textContent='✓ OK'; btn.classList.add('copied');
+    setTimeout(function(){btn.textContent=o;btn.classList.remove('copied');},1800);
   }
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(cmd).then(ok).catch(function(){ fallback(cmd, ok); });
-  } else { fallback(cmd, ok); }
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(cmd).then(ok).catch(function(){fallback(cmd,ok);});
+  } else { fallback(cmd,ok); }
+  if(!fromHistory) addToHistory(cmd, cat||currentCat||'');
 }
-function fallback(text, cb) {
-  var ta = document.createElement('textarea');
-  ta.value = text; ta.style.cssText = 'position:fixed;top:0;left:0;width:2px;height:2px;opacity:0';
+function fallback(text,cb){
+  var ta=document.createElement('textarea'); ta.value=text;
+  ta.style.cssText='position:fixed;top:0;left:0;width:2px;height:2px;opacity:0';
   document.body.appendChild(ta); ta.focus(); ta.select();
-  try { if (document.execCommand('copy')) cb(); } catch(e){}
+  try{if(document.execCommand('copy'))cb();}catch(e){}
   document.body.removeChild(ta);
 }
 
 /* ══════════════════════════════════════
+   KEYBOARD SHORTCUTS
+══════════════════════════════════════ */
+document.addEventListener('keydown', function(e) {
+  // Ctrl+K — focus search
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){
+    e.preventDefault();
+    var si=document.getElementById('searchInput');
+    si.focus(); si.select();
+  }
+  // Escape — close modals / clear search / close history
+  if(e.key==='Escape'){
+    if(historyOpen){ toggleHistory(); return; }
+    var modals=['cmdModal','catModal','delCatModal'];
+    var closed=false;
+    modals.forEach(function(id){
+      if(document.getElementById(id).classList.contains('open')){
+        document.getElementById(id).classList.remove('open'); closed=true;
+      }
+    });
+    if(!closed){
+      var si=document.getElementById('searchInput');
+      if(si.value){si.value='';handleSearch('');}
+    }
+  }
+  // Ctrl+Enter — save modal if open
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){
+    if(document.getElementById('cmdModal').classList.contains('open')) saveCmd();
+    if(document.getElementById('catModal').classList.contains('open')) saveCategory();
+  }
+  // H — toggle history (when not typing)
+  if(e.key==='h'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){
+    toggleHistory();
+  }
+});
+
+/* ══════════════════════════════════════
+   CLOSE MODALS ON OVERLAY
+══════════════════════════════════════ */
+['cmdModal','catModal','delCatModal'].forEach(function(id){
+  document.getElementById(id).addEventListener('click',function(e){
+    if(e.target===this){
+      if(id==='cmdModal') closeCmdModal();
+      if(id==='catModal') closeCatModal();
+      if(id==='delCatModal') closeDelCatModal();
+    }
+  });
+});
+
+/* ══════════════════════════════════════
    ESCAPE
 ══════════════════════════════════════ */
-function esc(s) {
+function esc(s){
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
@@ -1039,64 +1203,43 @@ function esc(s) {
    TOAST
 ══════════════════════════════════════ */
 var _tt;
-function toast(msg, isError) {
-  var el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast' + (isError ? ' error' : '');
-  el.classList.add('show');
-  clearTimeout(_tt);
-  _tt = setTimeout(function(){ el.classList.remove('show'); }, 2800);
+function toast(msg,isError){
+  var el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast'+(isError?' error':'');
+  el.classList.add('show'); clearTimeout(_tt);
+  _tt=setTimeout(function(){el.classList.remove('show');},2800);
 }
 
 /* ══════════════════════════════════════
-   CLOSE MODALS ON OVERLAY CLICK
+   PWA
 ══════════════════════════════════════ */
-['cmdModal','catModal','delCatModal'].forEach(function(id) {
-  document.getElementById(id).addEventListener('click', function(e) {
-    if (e.target === this) {
-      if (id==='cmdModal') closeCmdModal();
-      if (id==='catModal') closeCatModal();
-      if (id==='delCatModal') closeDelCatModal();
-    }
-  });
+var _deferredInstall=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault(); _deferredInstall=e;
+  document.getElementById('installBtn').style.display='block';
 });
+window.addEventListener('appinstalled',function(){
+  document.getElementById('installBtn').style.display='none';
+  _deferredInstall=null; toast('📲 App instalada');
+});
+function installPWA(){
+  if(!_deferredInstall) return;
+  _deferredInstall.prompt();
+  _deferredInstall.userChoice.then(function(r){
+    if(r.outcome==='accepted') toast('📲 Instalando...');
+    _deferredInstall=null;
+  });
+}
 
 /* ══════════════════════════════════════
    INIT
 ══════════════════════════════════════ */
-// PWA Install prompt
-var _deferredInstall = null;
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  _deferredInstall = e;
-  var btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'block';
-});
-window.addEventListener('appinstalled', function() {
-  var btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'none';
-  _deferredInstall = null;
-  toast('📲 App instalada correctamente');
-});
-function installPWA() {
-  if (!_deferredInstall) return;
-  _deferredInstall.prompt();
-  _deferredInstall.userChoice.then(function(r) {
-    if (r.outcome === 'accepted') toast('📲 Instalando app...');
-    _deferredInstall = null;
-  });
-}
-
+loadHistory();
 showScreen('notConnected');
-window.addEventListener('load', function() {
+window.addEventListener('load', function(){
   initGoogleAuth();
-  // Register Service Worker for PWA + offline
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/cp-reference/sw.js').then(function(reg) {
-      console.log('SW registered:', reg.scope);
-    }).catch(function(e) {
-      console.log('SW registration failed:', e);
-    });
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('/cp-reference/sw.js').catch(function(){});
   }
 });
 </script>
