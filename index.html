@@ -284,6 +284,16 @@ body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-seri
   .history-panel { width: 90vw; }
   .filter-row { display: none; }
 }
+
+  /* ══ CURSO PANEL ══ */
+  .curso-panel { position: fixed; inset: 0; z-index: 190; display: none; flex-direction: column; background: var(--bg); }
+  .curso-panel.open { display: flex; }
+  .curso-topbar { display: flex; align-items: center; gap: 12px; padding: 10px 18px; background: linear-gradient(135deg, var(--navy-dark), var(--navy)); border-bottom: 2px solid var(--gold); flex-shrink: 0; }
+  .curso-title { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gold); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; flex: 1; }
+  .curso-close { background: rgba(224,92,92,0.1); border: 1px solid rgba(224,92,92,0.2); border-radius: 8px; padding: 6px 14px; color: var(--red); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; transition: all 0.18s; }
+  .curso-close:hover { background: rgba(224,92,92,0.2); border-color: var(--red); }
+  .curso-frame { flex: 1; border: none; width: 100%; background: #090c14; }
+  .curso-loading { display: flex; align-items: center; justify-content: center; flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); gap: 10px; }
 </style>
 </head>
 <body>
@@ -335,6 +345,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-seri
   <div class="nav-tabs" id="navTabs"></div>
   <div class="nav-actions">
     <button class="nav-btn green" onclick="openCatModal()">＋ Categoría</button>
+    <button class="nav-btn" onclick="openCurso()" style="color:var(--gold);border-left:1px solid var(--border);" title="Abrir curso de estudio">📖 Curso</button>
   </div>
 </div>
 
@@ -1234,6 +1245,34 @@ function installPWA(){
 /* ══════════════════════════════════════
    INIT
 ══════════════════════════════════════ */
+
+/* ══════════════════════════════════════
+   CURSO PANEL
+══════════════════════════════════════ */
+function openCurso() {
+  var panel = document.getElementById('cursoPanel');
+  var frame = document.getElementById('cursoFrame');
+  panel.classList.add('open');
+  if (!frame.src || frame.src === window.location.href) {
+    frame.src = 'curso.html';
+  }
+  document.body.style.overflow = 'hidden';
+}
+function closeCurso() {
+  document.getElementById('cursoPanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+// Keyboard shortcut: C to open curso
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'c' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    if (document.getElementById('cursoPanel').classList.contains('open')) {
+      closeCurso();
+    } else {
+      openCurso();
+    }
+  }
+});
+
 loadHistory();
 showScreen('notConnected');
 window.addEventListener('load', function(){
@@ -1243,5 +1282,15 @@ window.addEventListener('load', function(){
   }
 });
 </script>
+
+<!-- ═══ CURSO PANEL ═══ -->
+<div class="curso-panel" id="cursoPanel">
+  <div class="curso-topbar">
+    <span class="curso-title">📖 Check Point Quantum — Curso Completo 0 → Experto</span>
+    <button class="curso-close" onclick="closeCurso()">✕ Cerrar</button>
+  </div>
+  <iframe class="curso-frame" id="cursoFrame" src="" allowfullscreen></iframe>
+</div>
+
 </body>
 </html>
