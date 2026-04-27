@@ -1,4 +1,4 @@
-const CACHE = 'safeid-cp-v3';
+const CACHE = 'safeid-cp-v4';
 const ASSETS = [
   '/cp-reference/',
   '/cp-reference/index.html',
@@ -57,4 +57,10 @@ self.addEventListener('fetch', function(e) {
       });
     })
   );
+});
+
+self.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
