@@ -411,7 +411,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-seri
     <div class="search-results" id="searchResults"><div id="searchContent"></div></div>
     <div id="sectionContent"></div>
   </div>
-  <div class="footer"><span>SafeID SAS</span> · Seguridad de la Información · By Ricardo Arjona</div>
+  <div class="footer"><span>SafeID SAS</span> · Seguridad de la Información · By Santiago8a</div>
 </div>
 
 <!-- ═══ HISTORY PANEL ═══ -->
@@ -686,7 +686,7 @@ function renderHistory() {
     return;
   }
   body.innerHTML = copyHistory.map(function(item) {
-    var enc = encodeURIComponent(item.cmd);
+    var enc = encodeURIComponent(item.cmd).replace(/'/g,'%27');
     var ago = timeAgo(item.time);
     return '<div class="history-item" onclick="doCopy(this,decodeURIComponent(\'' + enc + '\'),\'\',true)">' +
       '<span class="history-cat">' + esc(item.cat) + '</span>' +
@@ -977,7 +977,7 @@ function renderSection(catId) {
   } else if(currentView==='table'&&!isSKs) {
     html+='<div style="overflow-x:auto;"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Tags / Ver</th><th>Acciones</th></tr></thead><tbody>';
     cmds.forEach(function(item){
-      var enc=encodeURIComponent(item.cmd);
+      var enc=encodeURIComponent(item.cmd).replace(/'/g,'%27');
       var metaHtml='';
       (item.tags||[]).forEach(function(t){metaHtml+='<span class="cmd-tag">'+esc(t)+'</span> ';});
       (item.versions||[]).forEach(function(v){metaHtml+='<span class="cmd-ver">'+esc(v)+'</span> ';});
@@ -1005,7 +1005,7 @@ function renderSection(catId) {
             '<span class="sk-arrow">↗</span>'+
           '</div></a>';
       } else {
-        var enc=encodeURIComponent(item.cmd);
+        var enc=encodeURIComponent(item.cmd).replace(/'/g,'%27');
         var metaHtml='';
         if(item.ref) metaHtml+='<span class="cmd-ref">📎 '+esc(item.ref)+'</span>';
         (item.tags||[]).forEach(function(t){metaHtml+='<span class="cmd-tag">'+esc(t)+'</span>';});
@@ -1157,7 +1157,7 @@ function handleSearch(val) {
       html+='<div class="subsection" style="margin-top:14px;">'+(cat.icon||'')+' '+esc(cat.name)+' — '+cr.length+'</div>';
       html+='<div class="cmd-grid">';
       cr.forEach(function(item){
-        var enc=encodeURIComponent(item.cmd);
+        var enc=encodeURIComponent(item.cmd).replace(/'/g,'%27');
         var metaHtml='';
         if(item.ref) metaHtml+='<span class="cmd-ref">📎 '+esc(item.ref)+'</span>';
         (item.tags||[]).forEach(function(t){metaHtml+='<span class="cmd-tag">'+esc(t)+'</span>';});
@@ -1318,12 +1318,55 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+/* ══════════════════════════════════════
+   AUTO UPDATE BANNER
+══════════════════════════════════════ */
+function showUpdateBanner() {
+  var existing = document.getElementById('updateBanner');
+  if (existing) return;
+  var banner = document.createElement('div');
+  banner.id = 'updateBanner';
+  banner.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a273d;border:1px solid #C8922A;border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:12px;z-index:400;box-shadow:0 8px 24px rgba(0,0,0,0.4);font-family:JetBrains Mono,monospace;font-size:12px;color:#e8edf5;white-space:nowrap;';
+  banner.innerHTML = '<span>🔄 Nueva versión disponible</span>' +
+    '<button onclick="applyUpdate()" style="background:#C8922A;border:none;border-radius:6px;padding:5px 12px;color:#0f1824;font-family:JetBrains Mono,monospace;font-size:11px;font-weight:700;cursor:pointer;">ACTUALIZAR</button>' +
+    '<button onclick="this.parentElement.remove()" style="background:transparent;border:none;color:#6b82a0;cursor:pointer;font-size:16px;padding:0 4px;">✕</button>';
+  document.body.appendChild(banner);
+}
+
+function applyUpdate() {
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistration().then(function(reg){
+      if(reg && reg.waiting){ reg.waiting.postMessage({type:'SKIP_WAITING'}); }
+      else { window.location.reload(); }
+    });
+  } else { window.location.reload(); }
+}
+
 loadHistory();
 showScreen('notConnected');
 window.addEventListener('load', function(){
   initGoogleAuth();
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('/cp-reference/sw.js').catch(function(){});
+    navigator.serviceWorker.register('/cp-reference/sw.js').then(function(reg){
+      // Check for updates every time page loads
+      reg.addEventListener('updatefound', function(){
+        var newWorker = reg.installing;
+        newWorker.addEventListener('statechange', function(){
+          if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
+            // New version available — show update toast
+            showUpdateBanner();
+          }
+        });
+      });
+      // Force check for update
+      reg.update();
+    }).catch(function(){});
+
+    // When new SW takes control, reload
+    var refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function(){
+      if(!refreshing){ refreshing = true; window.location.reload(); }
+    });
   }
 });
 </script>
