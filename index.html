@@ -339,6 +339,32 @@ body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-seri
   .curso-close:hover { background: rgba(224,92,92,0.2); border-color: var(--red); }
   .curso-frame { flex: 1; border: none; width: 100%; background: #090c14; }
   .curso-loading { display: flex; align-items: center; justify-content: center; flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); gap: 10px; }
+
+  /* ══ ACCESOS ══ */
+  .accesos-panel { display: none; }
+  .accesos-panel.active { display: block; }
+  .accesos-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+  .accesos-title { font-size: 19px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  .acceso-group { margin-bottom: 24px; }
+  .acceso-group-title { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; font-family: 'JetBrains Mono', monospace; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+  .acceso-group-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .accesos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+  .acceso-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; transition: all 0.18s; cursor: pointer; text-decoration: none; position: relative; overflow: hidden; }
+  .acceso-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 12px 0 0 12px; background: #7aaeff; opacity: 0; transition: opacity 0.18s; }
+  .acceso-card:hover { border-color: rgba(122,174,255,0.3); background: var(--card-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+  .acceso-card:hover::before { opacity: 1; }
+  .acceso-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(122,174,255,0.1); border: 1px solid rgba(122,174,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .acceso-info { flex: 1; min-width: 0; }
+  .acceso-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .acceso-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .acceso-note { font-size: 10px; color: var(--muted); margin-top: 2px; font-style: italic; }
+  .acceso-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .acceso-add-card { background: transparent; border: 1px dashed var(--border); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.18s; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .acceso-add-card:hover { border-color: var(--green); color: var(--green); background: rgba(76,175,125,0.05); }
+
+  @media (max-width: 640px) {
+    .accesos-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -391,6 +417,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-seri
   <div class="nav-actions">
     <button class="nav-btn green" onclick="openCatModal()">＋ Categoría</button>
     <button class="nav-btn" onclick="openCurso()" style="color:var(--gold);border-left:1px solid var(--border);" title="Abrir curso de estudio">📖 Curso</button>
+    <button class="nav-btn" onclick="showAccesos()" style="color:#7aaeff;border-left:1px solid var(--border);" title="Accesos rápidos">🚀 Accesos</button>
   </div>
 </div>
 
@@ -411,7 +438,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-seri
     <div class="search-results" id="searchResults"><div id="searchContent"></div></div>
     <div id="sectionContent"></div>
   </div>
-  <div class="footer"><span>SafeID SAS</span> · Seguridad de la Información · By Ricardo Arjona.</div>
+  <div class="footer"><span>SafeID SAS</span> · Seguridad de la Información · By Ricardo Arjona</div>
 </div>
 
 <!-- ═══ HISTORY PANEL ═══ -->
@@ -897,6 +924,8 @@ function loadFromDrive() {
           if(!c.versions) c.versions=[];
           if(!c.notes) c.notes='';
         });
+        // Ensure accesos exist
+        if(!db.accesos) db.accesos = JSON.parse(JSON.stringify(DEFAULT_ACCESOS));
         initApp(); setSyncing(false);
         toast('☁️ '+db.commands.length+' comandos cargados');
       });
@@ -1238,12 +1267,15 @@ document.addEventListener('keydown', function(e) {
 /* ══════════════════════════════════════
    CLOSE MODALS ON OVERLAY
 ══════════════════════════════════════ */
-['cmdModal','catModal','delCatModal'].forEach(function(id){
-  document.getElementById(id).addEventListener('click',function(e){
+['cmdModal','catModal','delCatModal','accesoModal'].forEach(function(id){
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('click',function(e){
     if(e.target===this){
       if(id==='cmdModal') closeCmdModal();
       if(id==='catModal') closeCatModal();
       if(id==='delCatModal') closeDelCatModal();
+      if(id==='accesoModal') closeAccesoModal();
     }
   });
 });
@@ -1342,6 +1374,156 @@ function applyUpdate() {
   } else { window.location.reload(); }
 }
 
+
+/* ══════════════════════════════════════
+   ACCESOS
+══════════════════════════════════════ */
+var DEFAULT_ACCESOS = [
+  { id:'a1', name:'Portal SASE SafeID', url:'https://safeid.perimeter81.com/application-access/applicatio', icon:'🔐', user:'', group:'SafeID', notes:'VPN corporativa SafeID' },
+  { id:'a2', name:'Support Check Point', url:'https://support.checkpoint.com/', icon:'🛟', user:'', group:'CheckPoint', notes:'Tickets, SKs, documentación' },
+  { id:'a3', name:'Portal Check Point', url:'https://portal.checkpoint.com/', icon:'🛡️', user:'', group:'CheckPoint', notes:'Portal principal Check Point' },
+];
+
+function getAccesos() {
+  if (db && db.accesos) return db.accesos;
+  return DEFAULT_ACCESOS;
+}
+
+function showAccesos() {
+  // Hide nav tabs active state
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('searchResults').classList.remove('active');
+  document.getElementById('searchInput').value = '';
+
+  var accesos = getAccesos();
+  var groups = {};
+  accesos.forEach(function(a) {
+    if (!groups[a.group]) groups[a.group] = [];
+    groups[a.group].push(a);
+  });
+
+  var groupIcons = { 'SafeID':'🏢', 'CheckPoint':'🛡️', 'Clientes':'👥', 'Otro':'📁' };
+  var groupOrder = ['SafeID', 'CheckPoint', 'Clientes', 'Otro'];
+
+  var html = '<div class="accesos-header">' +
+    '<div class="accesos-title">🚀 Accesos Rápidos</div>' +
+    '<button class="btn btn-green" onclick="openAccesoModal()">➕ Agregar</button>' +
+  '</div>';
+
+  groupOrder.forEach(function(grp) {
+    if (!groups[grp] || !groups[grp].length) return;
+    html += '<div class="acceso-group">';
+    html += '<div class="acceso-group-title">' + (groupIcons[grp]||'📁') + ' ' + grp + '</div>';
+    html += '<div class="accesos-grid">';
+    groups[grp].forEach(function(a) {
+      html += '<a class="acceso-card" href="' + esc(a.url) + '" target="_blank">' +
+        '<div class="acceso-icon">' + (a.icon||'🌐') + '</div>' +
+        '<div class="acceso-info">' +
+          '<div class="acceso-name">' + esc(a.name) + '</div>' +
+          (a.user ? '<div class="acceso-meta">👤 ' + esc(a.user) + '</div>' : '') +
+          (a.notes ? '<div class="acceso-note">' + esc(a.notes) + '</div>' : '') +
+        '</div>' +
+        '<div class="acceso-actions">' +
+          '<button class="edit-btn" onclick="event.preventDefault();openEditAccesoModal(\'' + a.id + '\')">✏️</button>' +
+          '<button class="del-btn" onclick="event.preventDefault();deleteAcceso(\'' + a.id + '\')">🗑</button>' +
+        '</div>' +
+      '</a>';
+    });
+    // Add card per group
+    html += '<div class="acceso-add-card" onclick="openAccesoModal(\'' + grp + '\')">➕ Agregar en ' + grp + '</div>';
+    html += '</div></div>';
+  });
+
+  // Groups not in default order
+  Object.keys(groups).forEach(function(grp) {
+    if (groupOrder.indexOf(grp) > -1) return;
+    html += '<div class="acceso-group">';
+    html += '<div class="acceso-group-title">📁 ' + esc(grp) + '</div>';
+    html += '<div class="accesos-grid">';
+    groups[grp].forEach(function(a) {
+      html += '<a class="acceso-card" href="' + esc(a.url) + '" target="_blank">' +
+        '<div class="acceso-icon">' + (a.icon||'🌐') + '</div>' +
+        '<div class="acceso-info">' +
+          '<div class="acceso-name">' + esc(a.name) + '</div>' +
+          (a.user ? '<div class="acceso-meta">👤 ' + esc(a.user) + '</div>' : '') +
+          (a.notes ? '<div class="acceso-note">' + esc(a.notes) + '</div>' : '') +
+        '</div>' +
+        '<div class="acceso-actions">' +
+          '<button class="edit-btn" onclick="event.preventDefault();openEditAccesoModal(\'' + a.id + '\')">✏️</button>' +
+          '<button class="del-btn" onclick="event.preventDefault();deleteAcceso(\'' + a.id + '\')">🗑</button>' +
+        '</div>' +
+      '</a>';
+    });
+    html += '</div></div>';
+  });
+
+  document.getElementById('sectionContent').innerHTML = html;
+}
+
+function openAccesoModal(group) {
+  document.getElementById('accesoModalTitle').textContent = '🚀 Agregar acceso';
+  document.getElementById('acceso-edit-id').value = '';
+  document.getElementById('acceso-name').value  = '';
+  document.getElementById('acceso-url').value   = '';
+  document.getElementById('acceso-icon').value  = '';
+  document.getElementById('acceso-user').value  = '';
+  document.getElementById('acceso-notes').value = '';
+  if (group) document.getElementById('acceso-group').value = group;
+  document.getElementById('accesoModal').classList.add('open');
+  setTimeout(function(){ document.getElementById('acceso-name').focus(); }, 100);
+}
+
+function openEditAccesoModal(id) {
+  var accesos = getAccesos();
+  var a = accesos.find(function(x){ return x.id === id; });
+  if (!a) return;
+  document.getElementById('accesoModalTitle').textContent = '✏️ Editar acceso';
+  document.getElementById('acceso-edit-id').value = id;
+  document.getElementById('acceso-name').value  = a.name;
+  document.getElementById('acceso-url').value   = a.url;
+  document.getElementById('acceso-icon').value  = a.icon || '';
+  document.getElementById('acceso-user').value  = a.user || '';
+  document.getElementById('acceso-notes').value = a.notes || '';
+  document.getElementById('acceso-group').value = a.group || 'Otro';
+  document.getElementById('accesoModal').classList.add('open');
+}
+
+function closeAccesoModal() {
+  document.getElementById('accesoModal').classList.remove('open');
+}
+
+function saveAcceso() {
+  var name  = (document.getElementById('acceso-name').value||'').trim();
+  var url   = (document.getElementById('acceso-url').value||'').trim();
+  var icon  = (document.getElementById('acceso-icon').value||'').trim();
+  var user  = (document.getElementById('acceso-user').value||'').trim();
+  var notes = (document.getElementById('acceso-notes').value||'').trim();
+  var group = document.getElementById('acceso-group').value;
+  if (!name || !url) { toast('⚠️ Nombre y URL son obligatorios'); return; }
+  if (!db.accesos) db.accesos = JSON.parse(JSON.stringify(DEFAULT_ACCESOS));
+  var id = document.getElementById('acceso-edit-id').value;
+  if (id) {
+    db.accesos = db.accesos.map(function(a){ return a.id===id ? Object.assign({},a,{name:name,url:url,icon:icon||'🌐',user:user,notes:notes,group:group}) : a; });
+    toast('✏️ Acceso actualizado');
+  } else {
+    db.accesos.push({ id:'acc_'+Date.now(), name:name, url:url, icon:icon||'🌐', user:user, notes:notes, group:group });
+    toast('✅ Acceso guardado');
+  }
+  closeAccesoModal();
+  saveToDrive();
+  showAccesos();
+}
+
+function deleteAcceso(id) {
+  if (!db.accesos) db.accesos = JSON.parse(JSON.stringify(DEFAULT_ACCESOS));
+  db.accesos = db.accesos.filter(function(a){ return a.id !== id; });
+  saveToDrive();
+  showAccesos();
+  toast('🗑️ Acceso eliminado');
+}
+
+
+
 loadHistory();
 showScreen('notConnected');
 window.addEventListener('load', function(){
@@ -1370,6 +1552,56 @@ window.addEventListener('load', function(){
   }
 });
 </script>
+
+
+<!-- ═══ ACCESOS MODAL ═══ -->
+<div class="modal-overlay" id="accesoModal">
+  <div class="modal">
+    <div class="modal-title" id="accesoModalTitle">🚀 Agregar acceso</div>
+    <input type="hidden" id="acceso-edit-id">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nombre *</label>
+        <input class="form-input" id="acceso-name" type="text" placeholder="ej: Portal Check Point">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ícono / Emoji</label>
+        <input class="form-input" id="acceso-icon" type="text" placeholder="🌐" maxlength="4">
+      </div>
+    </div>
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="form-group">
+        <label class="form-label">URL *</label>
+        <input class="form-input" id="acceso-url" type="url" placeholder="https://...">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Usuario / IP</label>
+        <input class="form-input" id="acceso-user" type="text" placeholder="ej: admin, 10.x.x.x">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Grupo</label>
+        <select class="form-select" id="acceso-group">
+          <option value="SafeID">🏢 SafeID Interno</option>
+          <option value="CheckPoint">🛡️ Check Point</option>
+          <option value="Clientes">👥 Clientes</option>
+          <option value="Otro">📁 Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="form-group">
+        <label class="form-label">Notas</label>
+        <input class="form-input" id="acceso-notes" type="text" placeholder="ej: Usar VPN primero, puerto 4434...">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAccesoModal()">Cancelar</button>
+      <button class="btn btn-green" onclick="saveAcceso()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ CURSO PANEL ═══ -->
 <div class="curso-panel" id="cursoPanel">
