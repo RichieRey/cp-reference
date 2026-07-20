@@ -267,6 +267,12 @@ body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono',
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 .toast.error { border-color: var(--red); color: var(--red); }
 
+/* ══ UNDO BAR ══ */
+.undo-bar { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--surface); border: 1px solid var(--gold-border); border-radius: 10px; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text); z-index: 310; opacity: 0; transition: all 0.3s; display: flex; gap: 12px; align-items: center; box-shadow: 0 8px 24px var(--shadow); pointer-events: none; max-width: 92vw; }
+.undo-bar.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+.undo-btn { background: var(--gold-dim); border: 1px solid var(--gold-border); color: var(--gold); border-radius: 6px; padding: 4px 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+.undo-btn:hover { background: rgba(200,146,42,0.25); }
+
 /* ══ FOOTER ══ */
 .footer { text-align: center; padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 36px; letter-spacing: 1px; }
 .footer span { color: var(--gold); }
@@ -411,6 +417,9 @@ body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono',
       </div>
       <!-- History -->
       <button class="icon-btn" onclick="toggleHistory()" title="Historial de copiados (H)">🕑</button>
+      <button class="icon-btn" onclick="downloadBackup()" title="Descargar respaldo de toda la base de datos">💾</button>
+      <button class="icon-btn" onclick="document.getElementById('restoreFile').click()" title="Restaurar desde un respaldo">📥</button>
+      <input type="file" id="restoreFile" accept="application/json,.json" style="display:none" onchange="restoreBackup(event)">
       <!-- Dark/Light -->
       <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
       <!-- Install -->
@@ -571,6 +580,7 @@ body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono',
 
 <!-- ═══ TOAST ═══ -->
 <div class="toast" id="toast"></div>
+<div class="undo-bar" id="undoBar"><span id="undoMsg"></span><button class="undo-btn" onclick="doUndo()">DESHACER</button></div>
 
 <script src="https://accounts.google.com/gsi/client" async></script>
 <script>
@@ -1147,8 +1157,15 @@ function saveCmd() {
   closeCmdModal(); currentCat=cat; buildNav(); renderSection(cat); saveToDrive();
 }
 function deleteCmd(cmdId) {
-  db.commands=db.commands.filter(function(c){return c.id!==cmdId;});
-  renderSection(currentCat); saveToDrive(); toast('🗑️ Eliminado');
+  var idx=db.commands.findIndex(function(c){return c.id===cmdId;});
+  if(idx<0) return;
+  var item=db.commands[idx];
+  db.commands.splice(idx,1);
+  renderSection(currentCat); saveToDrive();
+  showUndo('🗑️ Comando eliminado', function(){
+    db.commands.splice(Math.min(idx,db.commands.length),0,item);
+    renderSection(currentCat); saveToDrive(); toast('↩️ Comando restaurado');
+  });
 }
 function closeCmdModal(){document.getElementById('cmdModal').classList.remove('open');}
 
@@ -1179,12 +1196,22 @@ function openDelCatModal(catId){
 function closeDelCatModal(){document.getElementById('delCatModal').classList.remove('open');pendingDelCat=null;}
 function confirmDelCat(){
   if(!pendingDelCat) return;
-  db.categories=db.categories.filter(function(c){return c.id!==pendingDelCat;});
-  db.commands=db.commands.filter(function(c){return c.cat!==pendingDelCat;});
+  var catId=pendingDelCat;
+  var catIdx=db.categories.findIndex(function(c){return c.id===catId;});
+  if(catIdx<0){ closeDelCatModal(); return; }
+  var cat=db.categories[catIdx];
+  var removedCmds=db.commands.filter(function(c){return c.cat===catId;});
+  db.categories=db.categories.filter(function(c){return c.id!==catId;});
+  db.commands=db.commands.filter(function(c){return c.cat!==catId;});
   closeDelCatModal(); buildNav();
   if(db.categories.length>0) showCategory(db.categories[0].id);
   else document.getElementById('sectionContent').innerHTML='';
-  saveToDrive(); toast('🗑️ Categoría eliminada');
+  saveToDrive();
+  showUndo('🗑️ "'+cat.name+'" eliminada ('+removedCmds.length+' comandos)', function(){
+    db.categories.splice(Math.min(catIdx,db.categories.length),0,cat);
+    db.commands=db.commands.concat(removedCmds);
+    buildNav(); showCategory(cat.id); saveToDrive(); toast('↩️ Categoría restaurada');
+  });
 }
 
 /* ══════════════════════════════════════
@@ -1559,10 +1586,16 @@ function saveAcceso() {
 
 function deleteAcceso(id) {
   if (!db.accesos) db.accesos = JSON.parse(JSON.stringify(DEFAULT_ACCESOS));
-  db.accesos = db.accesos.filter(function(a){ return a.id !== id; });
+  var idx=db.accesos.findIndex(function(a){ return a.id === id; });
+  if(idx<0) return;
+  var item=db.accesos[idx];
+  db.accesos.splice(idx,1);
   saveToDrive();
   showAccesos();
-  toast('🗑️ Acceso eliminado');
+  showUndo('🗑️ Acceso "'+item.name+'" eliminado', function(){
+    db.accesos.splice(Math.min(idx,db.accesos.length),0,item);
+    saveToDrive(); showAccesos(); toast('↩️ Acceso restaurado');
+  });
 }
 
 
@@ -1702,14 +1735,71 @@ function saveCaso() {
 }
 
 function deleteCaso(id) {
-  var c = getCasos().find(function(x){ return x.id === id; });
-  if (c && !window.confirm('¿Eliminar el caso "' + c.title + '"?\n\nEsta acción no se puede deshacer.')) return;
-  db.casos = (db.casos||[]).filter(function(x){ return x.id !== id; });
+  var idx=(db.casos||[]).findIndex(function(x){ return x.id === id; });
+  if(idx<0) return;
+  var item=db.casos[idx];
+  db.casos.splice(idx,1);
   saveToDrive();
   showCasos();
-  toast('🗑️ Caso eliminado');
+  var t=item.title.length>32?item.title.slice(0,32)+'…':item.title;
+  showUndo('🗑️ Caso "'+t+'" eliminado', function(){
+    db.casos.splice(Math.min(idx,db.casos.length),0,item);
+    saveToDrive(); showCasos(); toast('↩️ Caso restaurado');
+  });
 }
 
+
+/* ══════════════════════════════════════
+   RESPALDO / RESTAURAR
+══════════════════════════════════════ */
+function downloadBackup(){
+  if(!db){ toast('⚠️ Conecta Drive primero', true); return; }
+  var blob = new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  var d = new Date(), pad = function(n){ return (n<10?'0':'')+n; };
+  a.download = 'safeid_cp_respaldo_'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('💾 Respaldo descargado');
+}
+function restoreBackup(ev){
+  var file = ev.target.files[0];
+  ev.target.value = '';
+  if(!file) return;
+  if(!db || !accessToken){ toast('⚠️ Conecta Drive primero', true); return; }
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var data;
+    try { data = JSON.parse(e.target.result); } catch(err){ toast('❌ El archivo no es un respaldo válido', true); return; }
+    if(!data || !data.categories || !data.commands){ toast('❌ El archivo no es un respaldo válido', true); return; }
+    if(!window.confirm('¿Restaurar este respaldo?\n\nSe reemplazará TODO el contenido actual ('+db.commands.length+' comandos) por el del respaldo ('+data.commands.length+' comandos).')) return;
+    db = data;
+    db.commands.forEach(function(c){ if(!c.tags)c.tags=[]; if(!c.versions)c.versions=[]; if(!c.notes)c.notes=''; });
+    if(!db.accesos) db.accesos = JSON.parse(JSON.stringify(DEFAULT_ACCESOS));
+    if(!db.casos) db.casos = [];
+    saveToDrive(); initApp();
+    toast('✅ Respaldo restaurado');
+  };
+  reader.readAsText(file);
+}
+
+/* ══════════════════════════════════════
+   DESHACER ELIMINACIÓN
+══════════════════════════════════════ */
+var _undoFn = null, _undoTimer = null;
+function showUndo(msg, fn){
+  var el = document.getElementById('undoBar');
+  document.getElementById('undoMsg').textContent = msg;
+  _undoFn = fn;
+  el.classList.add('show');
+  clearTimeout(_undoTimer);
+  _undoTimer = setTimeout(function(){ el.classList.remove('show'); _undoFn = null; }, 6000);
+}
+function doUndo(){
+  document.getElementById('undoBar').classList.remove('show');
+  clearTimeout(_undoTimer);
+  if(_undoFn){ _undoFn(); _undoFn = null; }
+}
 
 loadHistory();
 showScreen('notConnected');
