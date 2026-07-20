@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -697,7 +697,8 @@ var historyOpen   = false;
    THEME
 ══════════════════════════════════════ */
 (function() {
-  var t = localStorage.getItem(THEME_KEY) || 'dark';
+  var t = 'light';
+  try { localStorage.setItem(THEME_KEY, t); } catch(e) {}
   document.documentElement.setAttribute('data-theme', t);
   setTimeout(function() {
     var btn = document.getElementById('themeBtn');
