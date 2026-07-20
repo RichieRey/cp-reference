@@ -7,6 +7,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap');
 :root{--bg:#090c14;--surface:#0f1520;--surface2:#161e2e;--border:rgba(255,255,255,0.07);--text:#e2e8f0;--muted:#64748b;--code-bg:#060a10;--nc:#3b82f6;--nc2:#93c5fd}
+[data-theme="light"]{--bg:#eef2f7;--surface:#ffffff;--surface2:#e7edf5;--border:rgba(15,30,50,0.13);--text:#1a2535;--muted:#5b7189}
 body[data-n="0"]{--nc:#3b82f6;--nc2:#93c5fd}
 body[data-n="1"]{--nc:#10b981;--nc2:#6ee7b7}
 body[data-n="2"]{--nc:#e63946;--nc2:#ff9999}
@@ -144,7 +145,42 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
   .content{padding:12px 10px}
   .mod-title{font-size:1.1rem}
 }
+
+/* ══ MODO DÍA ══ */
+[data-theme="light"] p{color:#3d5570}
+[data-theme="light"] .info-table td{color:#3d5570}
+[data-theme="light"] .steps li{color:#3d5570}
+[data-theme="light"] .lab-steps li{color:#3d5570}
+[data-theme="light"] .diagram{color:#334a63}
+[data-theme="light"] .diagram .label{color:#47607a}
+[data-theme="light"] .diagram .comment{color:#8296ab}
+[data-theme="light"] .callout.info{color:#1e4fa3}
+[data-theme="light"] .callout.info .callout-title{color:#1d4ed8}
+[data-theme="light"] .callout.warn{color:#7c5200}
+[data-theme="light"] .callout.warn .callout-title{color:#92600a}
+[data-theme="light"] .callout.tip{color:#166534}
+[data-theme="light"] .callout.tip .callout-title{color:#15803d}
+[data-theme="light"] .callout.danger{color:#b91c1c}
+[data-theme="light"] .callout.gold{color:#8a6400}
+[data-theme="light"] .callout.gold .callout-title{color:#946f00}
+[data-theme="light"] .quiz-options li.correct{color:#15803d}
+[data-theme="light"] .quiz-options li.wrong{color:#b91c1c}
+[data-theme="light"] .final-badge h3{color:#946f00}
+[data-theme="light"] .final-badge p{color:#8a6400}
+[data-theme="light"] .lab-desc{color:var(--nc);opacity:1}
 </style>
+<script>
+(function(){
+  var KEY='safeid_theme';
+  function applyTheme(){
+    var t='dark';
+    try{ t=localStorage.getItem(KEY)||'dark'; }catch(e){}
+    document.documentElement.setAttribute('data-theme',t);
+  }
+  applyTheme();
+  window.addEventListener('storage',function(e){ if(!e||!e.key||e.key===KEY) applyTheme(); });
+})();
+</script>
 </head>
 <body data-n="0">
 

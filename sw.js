@@ -1,4 +1,4 @@
-const CACHE = 'safeid-cp-v5';
+const CACHE = 'safeid-cp-v6';
 const ASSETS = [
   '/cp-reference/',
   '/cp-reference/index.html',
