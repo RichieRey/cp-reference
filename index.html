@@ -273,6 +273,13 @@ body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono',
 .undo-btn { background: var(--gold-dim); border: 1px solid var(--gold-border); color: var(--gold); border-radius: 6px; padding: 4px 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
 .undo-btn:hover { background: rgba(200,146,42,0.25); }
 
+/* ══ FILTROS BITÁCORA ══ */
+.caso-filter-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+.caso-filter-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 2px; }
+.caso-pill { font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+.caso-pill:hover { border-color: var(--gold-border); color: var(--gold); }
+.caso-pill.active { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
+
 /* ══ FOOTER ══ */
 .footer { text-align: center; padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 36px; letter-spacing: 1px; }
 .footer span { color: var(--gold); }
@@ -1608,24 +1615,63 @@ function getCasos() {
   return [];
 }
 
+var casoFilterCat = '', casoFilterTag = '';
+function setCasoFilterCat(v){ casoFilterCat = (casoFilterCat===v)?'':v; showCasos(); }
+function setCasoFilterTag(v){ casoFilterTag = (casoFilterTag===v)?'':v; showCasos(); }
 function showCasos() {
   document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById('searchResults').classList.remove('active');
   document.getElementById('searchInput').value = '';
   currentCat = null;
 
-  var casos = getCasos().slice().sort(function(a,b){ return (b.created||0)-(a.created||0); });
+  var all = getCasos().slice().sort(function(a,b){ return (b.created||0)-(a.created||0); });
+  var cats = [], tags = [];
+  all.forEach(function(c){
+    if (c.catName && cats.indexOf(c.catName) < 0) cats.push(c.catName);
+    (c.tags||[]).forEach(function(t){ if (tags.indexOf(t) < 0) tags.push(t); });
+  });
+  cats.sort(); tags.sort();
+  if (casoFilterCat && cats.indexOf(casoFilterCat) < 0) casoFilterCat = '';
+  if (casoFilterTag && tags.indexOf(casoFilterTag) < 0) casoFilterTag = '';
+  var casos = all.filter(function(c){
+    if (casoFilterCat && (c.catName||'') !== casoFilterCat) return false;
+    if (casoFilterTag && (c.tags||[]).indexOf(casoFilterTag) < 0) return false;
+    return true;
+  });
+
+  var counter = casos.length + (casos.length !== all.length ? ' / ' + all.length : '') + ' caso(s)';
   var html = '<div class="accesos-header">' +
     '<div class="accesos-title">📋 Bitácora de Casos</div>' +
     '<div style="display:flex;align-items:center;gap:10px;">' +
-      '<span class="section-meta">' + casos.length + ' caso(s)</span>' +
+      '<span class="section-meta">' + counter + '</span>' +
       '<button class="btn btn-green" onclick="openCasoModal()">➕ Nuevo caso</button>' +
     '</div>' +
   '</div>';
 
-  if (!casos.length) {
+  if (all.length && cats.length) {
+    html += '<div class="caso-filter-row"><span class="caso-filter-label">Categoría:</span>';
+    cats.forEach(function(v){
+      var enc = encodeURIComponent(v).replace(/'/g,'%27');
+      html += '<button class="caso-pill' + (casoFilterCat===v?' active':'') + '" onclick="setCasoFilterCat(decodeURIComponent(\'' + enc + '\'))">' + esc(v) + '</button>';
+    });
+    html += '</div>';
+  }
+  if (all.length && tags.length) {
+    html += '<div class="caso-filter-row"><span class="caso-filter-label">Tags:</span>';
+    tags.forEach(function(v){
+      var enc = encodeURIComponent(v).replace(/'/g,'%27');
+      html += '<button class="caso-pill' + (casoFilterTag===v?' active':'') + '" onclick="setCasoFilterTag(decodeURIComponent(\'' + enc + '\'))">' + esc(v) + '</button>';
+    });
+    html += '</div>';
+  }
+
+  if (all.length && !casos.length) {
+    html += '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Sin casos con ese filtro</div><div class="empty-desc">Toca el filtro activo para quitarlo.</div></div>';
+  }
+
+  if (!all.length) {
     html += '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Sin casos documentados</div><div class="empty-desc">Cuando resuelvas un caso, regístralo aquí:<br>problema, solución y comandos que funcionaron.<br>La próxima vez ya tienes el troubleshooting listo.</div></div>';
-  } else {
+  } else if (casos.length) {
     casos.forEach(function(c){ html += renderCasoCard(c, false); });
   }
   document.getElementById('sectionContent').innerHTML = html;
@@ -1654,7 +1700,7 @@ function renderCasoCard(c, forceOpen) {
   if (c.ticket)  meta += '<span class="caso-badge ticket">🎫 ' + esc(c.ticket) + '</span>';
   if (c.catName) meta += '<span class="caso-badge cat">' + esc(c.catName) + '</span>';
   if (fecha)     meta += '<span class="caso-badge date">📅 ' + fecha + '</span>';
-  (c.tags||[]).forEach(function(t){ meta += '<span class="cmd-tag">' + esc(t) + '</span>'; });
+  (c.tags||[]).forEach(function(t){ var te = encodeURIComponent(t).replace(/'/g,'%27'); meta += '<span class="cmd-tag" style="cursor:pointer;" onclick="event.stopPropagation();setCasoFilterTag(decodeURIComponent(\'' + te + '\'))" title="Filtrar por este tag">' + esc(t) + '</span>'; });
 
   return '<div class="caso-card' + (forceOpen?' open':'') + '" id="caso-' + c.id + '">' +
     '<div class="caso-head" onclick="toggleCaso(\'' + c.id + '\')">' +
@@ -1666,6 +1712,8 @@ function renderCasoCard(c, forceOpen) {
       '<div class="caso-label">✅ Solución</div><div class="caso-text">' + esc(c.solution) + '</div>' +
       cmdHtml +
       '<div class="caso-actions">' +
+        '<button class="copy-btn" onclick="copyCasoReport(\'' + c.id + '\')">📄 INFORME</button>' +
+        '<button class="edit-btn" onclick="printCaso(\'' + c.id + '\')">🖨️ PDF</button>' +
         '<button class="edit-btn" onclick="openEditCasoModal(\'' + c.id + '\')">✏️ Editar</button>' +
         '<button class="del-btn" onclick="deleteCaso(\'' + c.id + '\')">🗑 Eliminar</button>' +
       '</div>' +
@@ -1748,6 +1796,75 @@ function deleteCaso(id) {
   });
 }
 
+
+/* ══════════════════════════════════════
+   EXPORTAR CASO (INFORME / PDF)
+══════════════════════════════════════ */
+function buildCasoReport(c){
+  var d = c.created ? new Date(c.created).toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}) : '';
+  var L = [];
+  L.push('═══════════════════════════════════════');
+  L.push('CASO: ' + c.title);
+  var meta = [];
+  if (c.ticket)  meta.push('Ticket: ' + c.ticket);
+  if (c.catName) meta.push('Categoría: ' + c.catName);
+  if (d)         meta.push('Fecha: ' + d);
+  if (meta.length) L.push(meta.join('  |  '));
+  if (c.tags && c.tags.length) L.push('Tags: ' + c.tags.join(', '));
+  L.push('═══════════════════════════════════════');
+  L.push('');
+  L.push('▶ PROBLEMA');
+  L.push(c.problem || '');
+  L.push('');
+  L.push('▶ SOLUCIÓN');
+  L.push(c.solution || '');
+  if (c.cmds) {
+    L.push('');
+    L.push('▶ COMANDOS UTILIZADOS');
+    L.push(c.cmds);
+  }
+  L.push('');
+  L.push('Generado desde CheckPoint Reference · SafeID');
+  return L.join('\n');
+}
+function copyCasoReport(id){
+  var c = getCasos().find(function(x){ return x.id === id; });
+  if (!c) return;
+  var txt = buildCasoReport(c);
+  function ok(){ toast('📄 Informe copiado — pégalo en tu ticket'); }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(txt).then(ok).catch(function(){ fallback(txt, ok); });
+  } else { fallback(txt, ok); }
+}
+function printCaso(id){
+  var c = getCasos().find(function(x){ return x.id === id; });
+  if (!c) return;
+  var d = c.created ? new Date(c.created).toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}) : '';
+  var w = window.open('', '_blank');
+  if (!w) { toast('⚠️ Permite ventanas emergentes para exportar', true); return; }
+  var cmds = (c.cmds||'').split('\n').filter(function(l){ return l.trim(); }).map(function(l){ return '<div class="cl">' + esc(l) + '</div>'; }).join('');
+  var meta = [c.ticket ? ('🎫 ' + esc(c.ticket)) : '', c.catName ? esc(c.catName) : '', d, (c.tags && c.tags.length) ? ('Tags: ' + esc(c.tags.join(', '))) : ''].filter(Boolean).join(' &nbsp;·&nbsp; ');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(c.title) + '</title><style>' +
+    'body{font-family:Segoe UI,Arial,sans-serif;color:#1a2535;max-width:760px;margin:40px auto;padding:0 24px;line-height:1.6}' +
+    'h1{font-size:20px;border-bottom:3px solid #C8922A;padding-bottom:10px}' +
+    '.meta{font-size:12px;color:#5b7189;margin-bottom:24px}' +
+    'h2{font-size:13px;text-transform:uppercase;letter-spacing:2px;color:#8a6400;margin:26px 0 8px}' +
+    'p{white-space:pre-wrap;font-size:14px;margin:0}' +
+    '.cmds{background:#0f1520;border-radius:8px;padding:14px 16px;margin-top:8px}' +
+    '.cl{font-family:Consolas,monospace;font-size:12.5px;color:#7ee787;padding:2px 0;white-space:pre-wrap;word-break:break-all}' +
+    '.foot{margin-top:36px;font-size:11px;color:#8a97a8;border-top:1px solid #d6dee8;padding-top:10px}' +
+    '@media print{body{margin:10mm auto}}' +
+  '</style></head><body>' +
+    '<h1>' + esc(c.title) + '</h1>' +
+    '<div class="meta">' + meta + '</div>' +
+    '<h2>Problema</h2><p>' + esc(c.problem) + '</p>' +
+    '<h2>Solución</h2><p>' + esc(c.solution) + '</p>' +
+    (cmds ? '<h2>Comandos utilizados</h2><div class="cmds">' + cmds + '</div>' : '') +
+    '<div class="foot">Generado desde CheckPoint Reference · SafeID</div>' +
+  '</body></html>');
+  w.document.close();
+  setTimeout(function(){ w.print(); }, 400);
+}
 
 /* ══════════════════════════════════════
    RESPALDO / RESTAURAR
