@@ -280,6 +280,22 @@ body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono',
 .caso-pill:hover { border-color: var(--gold-border); color: var(--gold); }
 .caso-pill.active { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
 
+/* ══ ESTADÍSTICAS ══ */
+.stats-tot { display: flex; gap: 10px; margin-bottom: 16px; }
+.stats-tot-item { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+.stats-num { font-size: 22px; font-weight: 700; color: var(--gold); }
+.stats-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+.stat-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; font-size: 12px; }
+.stat-name { min-width: 170px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stat-name.mono { min-width: 0; flex: 1; }
+.stat-bar-wrap { flex: 1; background: var(--bg); border-radius: 4px; height: 10px; overflow: hidden; }
+.stat-bar { height: 100%; background: var(--gold); border-radius: 4px; }
+.stat-bar.green { background: var(--green); }
+.stat-val { min-width: 30px; text-align: right; color: var(--text); font-weight: 700; }
+
+/* ══ EVIDENCIA EN CASOS ══ */
+.caso-evid { background: #0f1520; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #9fb6d4; white-space: pre-wrap; word-break: break-all; max-height: 260px; overflow-y: auto; }
+
 /* ══ FOOTER ══ */
 .footer { text-align: center; padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 36px; letter-spacing: 1px; }
 .footer span { color: var(--gold); }
@@ -426,6 +442,7 @@ body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono',
       <button class="icon-btn" onclick="toggleHistory()" title="Historial de copiados (H)">🕑</button>
       <button class="icon-btn" onclick="downloadBackup()" title="Descargar respaldo de toda la base de datos">💾</button>
       <button class="icon-btn" onclick="document.getElementById('restoreFile').click()" title="Restaurar desde un respaldo">📥</button>
+      <button class="icon-btn" onclick="openStatsModal()" title="Estadísticas">📊</button>
       <input type="file" id="restoreFile" accept="application/json,.json" style="display:none" onchange="restoreBackup(event)">
       <!-- Dark/Light -->
       <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
@@ -1293,7 +1310,7 @@ function doCopy(btn, cmd, cat, fromHistory) {
   if(navigator.clipboard&&window.isSecureContext){
     navigator.clipboard.writeText(cmd).then(ok).catch(function(){fallback(cmd,ok);});
   } else { fallback(cmd,ok); }
-  if(!fromHistory) addToHistory(cmd, cat||currentCat||'');
+  if(!fromHistory){ addToHistory(cmd, cat||currentCat||''); bumpCopyCount(cmd); }
 }
 function fallback(text,cb){
   var ta=document.createElement('textarea'); ta.value=text;
@@ -1316,7 +1333,7 @@ document.addEventListener('keydown', function(e) {
   // Escape — close modals / clear search / close history
   if(e.key==='Escape'){
     if(historyOpen){ toggleHistory(); return; }
-    var modals=['cmdModal','catModal','delCatModal','accesoModal','casoModal'];
+    var modals=['cmdModal','catModal','delCatModal','accesoModal','casoModal','statsModal'];
     var closed=false;
     modals.forEach(function(id){
       if(document.getElementById(id).classList.contains('open')){
@@ -1343,7 +1360,7 @@ document.addEventListener('keydown', function(e) {
 /* ══════════════════════════════════════
    CLOSE MODALS ON OVERLAY
 ══════════════════════════════════════ */
-['cmdModal','catModal','delCatModal','accesoModal','casoModal'].forEach(function(id){
+['cmdModal','catModal','delCatModal','accesoModal','casoModal','statsModal'].forEach(function(id){
   var el = document.getElementById(id);
   if(!el) return;
   el.addEventListener('click',function(e){
@@ -1353,6 +1370,7 @@ document.addEventListener('keydown', function(e) {
       if(id==='delCatModal') closeDelCatModal();
       if(id==='accesoModal') closeAccesoModal();
       if(id==='casoModal') closeCasoModal();
+      if(id==='statsModal') closeStatsModal();
     }
   });
 });
@@ -1696,6 +1714,10 @@ function renderCasoCard(c, forceOpen) {
     });
     cmdHtml += '</div>';
   }
+  var evidHtml = '';
+  if (c.evidence) {
+    evidHtml = '<div class="caso-label">🧾 Evidencia</div><div class="caso-evid">' + esc(c.evidence) + '</div>';
+  }
   var meta = '';
   if (c.ticket)  meta += '<span class="caso-badge ticket">🎫 ' + esc(c.ticket) + '</span>';
   if (c.catName) meta += '<span class="caso-badge cat">' + esc(c.catName) + '</span>';
@@ -1710,7 +1732,7 @@ function renderCasoCard(c, forceOpen) {
     '<div class="caso-body">' +
       '<div class="caso-label">🔴 Problema</div><div class="caso-text">' + esc(c.problem) + '</div>' +
       '<div class="caso-label">✅ Solución</div><div class="caso-text">' + esc(c.solution) + '</div>' +
-      cmdHtml +
+      cmdHtml + evidHtml +
       '<div class="caso-actions">' +
         '<button class="copy-btn" onclick="copyCasoReport(\'' + c.id + '\')">📄 INFORME</button>' +
         '<button class="edit-btn" onclick="printCaso(\'' + c.id + '\')">🖨️ PDF</button>' +
@@ -1728,7 +1750,7 @@ function toggleCaso(id) {
 
 function openCasoModal() {
   document.getElementById('casoModalTitle').textContent = '📋 Nuevo caso';
-  ['caso-edit-id','caso-title','caso-ticket','caso-cat','caso-tags','caso-problem','caso-solution','caso-cmds'].forEach(function(id){
+  ['caso-edit-id','caso-title','caso-ticket','caso-cat','caso-tags','caso-problem','caso-solution','caso-cmds','caso-evidence'].forEach(function(id){
     document.getElementById(id).value = '';
   });
   document.getElementById('casoModal').classList.add('open');
@@ -1747,6 +1769,7 @@ function openEditCasoModal(id) {
   document.getElementById('caso-problem').value = c.problem || '';
   document.getElementById('caso-solution').value = c.solution || '';
   document.getElementById('caso-cmds').value    = c.cmds || '';
+  document.getElementById('caso-evidence').value = c.evidence || '';
   document.getElementById('casoModal').classList.add('open');
 }
 
@@ -1766,7 +1789,8 @@ function saveCaso() {
     tags: (document.getElementById('caso-tags').value||'').split(',').map(function(t){ return t.trim().toLowerCase(); }).filter(Boolean),
     problem: problem,
     solution: solution,
-    cmds: (document.getElementById('caso-cmds').value||'').replace(/\s+$/,'')
+    cmds: (document.getElementById('caso-cmds').value||'').replace(/\s+$/,''),
+    evidence: (document.getElementById('caso-evidence').value||'').replace(/\s+$/,'')
   };
   if (!db.casos) db.casos = [];
   var id = document.getElementById('caso-edit-id').value;
@@ -1798,6 +1822,63 @@ function deleteCaso(id) {
 
 
 /* ══════════════════════════════════════
+   ESTADÍSTICAS
+══════════════════════════════════════ */
+var COPY_COUNT_KEY = 'safeid_copy_counts';
+function bumpCopyCount(cmd){
+  try {
+    var m = JSON.parse(localStorage.getItem(COPY_COUNT_KEY)||'{}');
+    var k = cmd.trim().slice(0,120);
+    m[k] = (m[k]||0)+1;
+    localStorage.setItem(COPY_COUNT_KEY, JSON.stringify(m));
+  } catch(e){}
+}
+function openStatsModal(){
+  if(!db){ toast('⚠️ Conecta Drive primero', true); return; }
+  var html = '';
+  var totCmd = db.commands.length, totCasos = (db.casos||[]).length, totAcc = (db.accesos||[]).length;
+  html += '<div class="stats-tot">' +
+    '<div class="stats-tot-item"><div class="stats-num">' + totCmd + '</div><div class="stats-lbl">comandos</div></div>' +
+    '<div class="stats-tot-item"><div class="stats-num">' + totCasos + '</div><div class="stats-lbl">casos</div></div>' +
+    '<div class="stats-tot-item"><div class="stats-num">' + totAcc + '</div><div class="stats-lbl">accesos</div></div>' +
+  '</div>';
+  html += '<div class="subsection">Comandos por categoría</div>';
+  var max = 1, rows = [];
+  db.categories.forEach(function(cat){
+    var n = db.commands.filter(function(c){ return c.cat===cat.id; }).length;
+    if(n>max) max = n;
+    rows.push([cat,n]);
+  });
+  rows.sort(function(a,b){ return b[1]-a[1]; });
+  rows.forEach(function(r){
+    html += '<div class="stat-row"><span class="stat-name">' + (r[0].icon||'') + ' ' + esc(r[0].name) + '</span><div class="stat-bar-wrap"><div class="stat-bar" style="width:' + (r[1]/max*100).toFixed(0) + '%"></div></div><span class="stat-val">' + r[1] + '</span></div>';
+  });
+  var cmap = {};
+  (db.casos||[]).forEach(function(c){ var k = c.catName||'Sin categoría'; cmap[k] = (cmap[k]||0)+1; });
+  var ck = Object.keys(cmap);
+  if(ck.length){
+    html += '<div class="subsection" style="margin-top:18px;">Casos por categoría</div>';
+    var cmax = 1;
+    ck.forEach(function(k){ if(cmap[k]>cmax) cmax = cmap[k]; });
+    ck.sort(function(a,b){ return cmap[b]-cmap[a]; }).forEach(function(k){
+      html += '<div class="stat-row"><span class="stat-name">' + esc(k) + '</span><div class="stat-bar-wrap"><div class="stat-bar green" style="width:' + (cmap[k]/cmax*100).toFixed(0) + '%"></div></div><span class="stat-val">' + cmap[k] + '</span></div>';
+    });
+  }
+  var counts = {};
+  try { counts = JSON.parse(localStorage.getItem(COPY_COUNT_KEY)||'{}'); } catch(e){}
+  var keys = Object.keys(counts).sort(function(a,b){ return counts[b]-counts[a]; }).slice(0,5);
+  if(keys.length){
+    html += '<div class="subsection" style="margin-top:18px;">Comandos más copiados (este equipo)</div>';
+    keys.forEach(function(k){
+      html += '<div class="stat-row"><span class="stat-name mono">' + esc(k.length>46?k.slice(0,46)+'…':k) + '</span><span class="stat-val">' + counts[k] + '×</span></div>';
+    });
+  }
+  document.getElementById('statsBody').innerHTML = html;
+  document.getElementById('statsModal').classList.add('open');
+}
+function closeStatsModal(){ document.getElementById('statsModal').classList.remove('open'); }
+
+/* ══════════════════════════════════════
    EXPORTAR CASO (INFORME / PDF)
 ══════════════════════════════════════ */
 function buildCasoReport(c){
@@ -1822,6 +1903,11 @@ function buildCasoReport(c){
     L.push('');
     L.push('▶ COMANDOS UTILIZADOS');
     L.push(c.cmds);
+  }
+  if (c.evidence) {
+    L.push('');
+    L.push('▶ EVIDENCIA');
+    L.push(c.evidence);
   }
   L.push('');
   L.push('Generado desde CheckPoint Reference · SafeID');
@@ -1860,6 +1946,7 @@ function printCaso(id){
     '<h2>Problema</h2><p>' + esc(c.problem) + '</p>' +
     '<h2>Solución</h2><p>' + esc(c.solution) + '</p>' +
     (cmds ? '<h2>Comandos utilizados</h2><div class="cmds">' + cmds + '</div>' : '') +
+    (c.evidence ? '<h2>Evidencia</h2><p style="font-family:Consolas,monospace;font-size:12px;background:#f4f7fa;border:1px solid #d6dee8;padding:12px;border-radius:8px;">' + esc(c.evidence) + '</p>' : '') +
     '<div class="foot">Generado desde CheckPoint Reference · SafeID</div>' +
   '</body></html>');
   w.document.close();
@@ -1997,6 +2084,17 @@ window.addEventListener('load', function(){
   </div>
 </div>
 
+<!-- ═══ STATS MODAL ═══ -->
+<div class="modal-overlay" id="statsModal">
+  <div class="modal">
+    <div class="modal-title">📊 Estadísticas</div>
+    <div id="statsBody"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeStatsModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ CASO MODAL ═══ -->
 <div class="modal-overlay" id="casoModal">
   <div class="modal" style="max-width:640px;">
@@ -2040,6 +2138,12 @@ window.addEventListener('load', function(){
       <div class="form-group">
         <label class="form-label">Comandos que funcionaron (uno por línea, # = comentario)</label>
         <textarea class="form-textarea" id="caso-cmds" rows="4" placeholder="vpn tu tlist -b&#10;# filtrar por peer&#10;fw ctl zdebug + drop | grep 10.1.1.5"></textarea>
+      </div>
+    </div>
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="form-group">
+        <label class="form-label">Evidencia / salida de comandos (opcional)</label>
+        <textarea class="form-textarea" id="caso-evidence" rows="3" placeholder="Pega aquí la salida que confirmó el diagnóstico (texto, no imágenes)"></textarea>
       </div>
     </div>
     <div class="modal-actions">

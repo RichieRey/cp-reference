@@ -168,6 +168,13 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 [data-theme="light"] .final-badge h3{color:#946f00}
 [data-theme="light"] .final-badge p{color:#8a6400}
 [data-theme="light"] .lab-desc{color:var(--nc);opacity:1}
+
+/* ══ PROGRESO DEL CURSO ══ */
+.sb-done{margin-top:14px;width:100%;background:transparent;border:1px dashed var(--border);border-radius:8px;padding:8px;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.7rem;cursor:pointer;transition:all .18s}
+.sb-done:hover{border-color:#22c55e;color:#22c55e}
+.sb-done.on{border-style:solid;border-color:#22c55e;color:#22c55e;background:rgba(34,197,94,0.08)}
+.sb-prog{margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);text-align:center}
+.m-btn.done::after{content:' ✓';color:#22c55e}
 </style>
 <script>
 (function(){
@@ -4203,6 +4210,40 @@ const SD=[
 ]
 ];
 
+const PROG_KEY='safeid_curso_prog';
+let PROG={pos:{n:0,m:0},done:{},quiz:{}};
+try{ const _p=JSON.parse(localStorage.getItem(PROG_KEY)||'{}'); PROG.pos=_p.pos||PROG.pos; PROG.done=_p.done||{}; PROG.quiz=_p.quiz||{}; }catch(e){}
+function saveProg(){ try{ localStorage.setItem(PROG_KEY,JSON.stringify(PROG)); }catch(e){} }
+function countDone(){ return Object.keys(PROG.done||{}).length; }
+function toggleDone(n,m){
+  if(!PROG.done)PROG.done={};
+  const k=n+'-'+m;
+  if(PROG.done[k]) delete PROG.done[k]; else PROG.done[k]=1;
+  saveProg(); buildSidebar(n,m); refreshDoneUI();
+}
+function refreshDoneUI(){
+  for(let n=0;n<5;n++){
+    const row=document.getElementById('mrow'+n);
+    if(!row)continue;
+    row.querySelectorAll('.m-btn').forEach((b,i)=>b.classList.toggle('done',!!(PROG.done&&PROG.done[n+'-'+i])));
+  }
+}
+function restoreQuiz(){
+  try{
+    const q=PROG.quiz||{};
+    Object.keys(q).forEach(function(k){
+      const parts=k.split('|');
+      const panel=document.getElementById(parts[0]);
+      if(!panel)return;
+      const quizzes=panel.querySelectorAll('.quiz-options');
+      const ul=quizzes[parseInt(parts[1])];
+      if(!ul)return;
+      const li=ul.children[q[k].li];
+      if(li)li.classList.add(q[k].type);
+    });
+  }catch(e){}
+}
+
 let cN=0, cM=[0,0,0,0,0];
 
 function goNivel(n){
@@ -4216,6 +4257,7 @@ function goNivel(n){
   for(let j=0;j<6;j++){const p=document.getElementById('n'+n+'m'+j);if(p)p.classList.toggle('active',j===cM[n]);}
   const row=document.getElementById('mrow'+n);
   if(row)row.querySelectorAll('.m-btn').forEach((t,i)=>t.classList.toggle('on',i===cM[n]));
+  PROG.pos={n:n,m:cM[n]}; saveProg();
   updateUI(n,cM[n]);
   document.getElementById('main').scrollTop=0;
 }
@@ -4235,6 +4277,7 @@ function setMod(n,m){
   const row=document.getElementById('mrow'+n);
   if(row)row.querySelectorAll('.m-btn').forEach((b,i)=>b.classList.toggle('on',i===m));
   cM[n]=m;
+  PROG.pos={n:n,m:m}; saveProg();
   updateUI(n,m);
   document.getElementById('main').scrollTop=0;
 }
@@ -4249,6 +4292,9 @@ function buildSidebar(n,m){
   const d=SD[n][m];
   sb.innerHTML='<div class="sb-title">'+d.title+'</div>'+
     d.items.map((t,i)=>`<div class="sb-item" onclick="scrollToSection('anc-n${n}m${m}-${i}')" style="cursor:pointer"><div class="sb-dot"></div>${t}</div>`).join('');
+  const dk=n+'-'+m, isDone=!!(PROG.done&&PROG.done[dk]);
+  sb.innerHTML += '<button class="sb-done'+(isDone?' on':'')+'" onclick="toggleDone('+n+','+m+')">'+(isDone?'✔ Módulo completado':'○ Marcar como completado')+'</button>'+
+    '<div class="sb-prog">'+countDone()+' / 30 módulos completados</div>';
 }
 
 function scrollToSection(id){
@@ -4266,7 +4312,27 @@ function scrollToSection(id){
   const idx=parseInt(id.split('-').pop());
   if(items[idx])items[idx].classList.add('sb-active');
 }
-function answer(el,type){Array.from(el.parentElement.children).forEach(li=>li.classList.remove('correct','wrong'));el.classList.add(type);}
+function answer(el,type){
+  Array.from(el.parentElement.children).forEach(li=>li.classList.remove('correct','wrong'));
+  el.classList.add(type);
+  try{
+    const panel=el.closest('.nivel-panel');
+    if(panel){
+      const quizzes=Array.from(panel.querySelectorAll('.quiz-options'));
+      const qi=quizzes.indexOf(el.parentElement);
+      const li=Array.from(el.parentElement.children).indexOf(el);
+      if(qi>-1){ if(!PROG.quiz)PROG.quiz={}; PROG.quiz[panel.id+'|'+qi]={li:li,type:type}; saveProg(); }
+    }
+  }catch(e){}
+}
 buildSidebar(0,0);
+(function(){
+  try{
+    const p=PROG.pos||{n:0,m:0};
+    if((p.n||0)>0||(p.m||0)>0) setMod(p.n||0,p.m||0);
+  }catch(e){}
+  restoreQuiz();
+  refreshDoneUI();
+})();
 
 </script></body></html>
