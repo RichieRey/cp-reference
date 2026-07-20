@@ -365,6 +365,30 @@ body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-seri
   @media (max-width: 640px) {
     .accesos-grid { grid-template-columns: 1fr; }
   }
+
+  /* ══ CASOS / BITÁCORA ══ */
+  .caso-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; transition: all 0.18s; }
+  .caso-card:hover { border-color: var(--gold-border); }
+  .caso-head { padding: 14px 16px; cursor: pointer; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+  .caso-head:hover { background: var(--card-hover); }
+  .caso-title { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+  .caso-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .caso-badge { font-size: 9px; font-family: 'JetBrains Mono', monospace; border-radius: 4px; padding: 1px 7px; border: 1px solid; }
+  .caso-badge.ticket { background: var(--gold-dim); color: var(--gold); border-color: var(--gold-border); }
+  .caso-badge.cat { background: rgba(122,174,255,0.1); color: #7aaeff; border-color: rgba(122,174,255,0.2); }
+  .caso-badge.date { background: transparent; color: var(--muted); border-color: var(--border); }
+  .caso-chevron { color: var(--muted); transition: transform 0.2s; margin-top: 2px; flex-shrink: 0; }
+  .caso-card.open .caso-chevron { transform: rotate(90deg); }
+  .caso-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--border); }
+  .caso-card.open .caso-body { display: block; }
+  .caso-label { font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin: 14px 0 6px; }
+  .caso-text { font-size: 12px; color: var(--text-dim); line-height: 1.65; white-space: pre-wrap; }
+  .caso-cmds { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .caso-cmd-line { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  .caso-cmd-line:last-child { border-bottom: none; }
+  .caso-cmd-line code { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--gold-light); white-space: pre-wrap; word-break: break-all; }
+  .caso-cmd-line code.comment { color: var(--muted); font-style: italic; }
+  .caso-actions { display: flex; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); }
 </style>
 </head>
 <body>
@@ -417,6 +441,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-seri
   <div class="nav-actions">
     <button class="nav-btn green" onclick="openCatModal()">＋ Categoría</button>
     <button class="nav-btn" onclick="openCurso()" style="color:var(--gold);border-left:1px solid var(--border);" title="Abrir curso de estudio">📖 Curso</button>
+    <button class="nav-btn" onclick="showCasos()" style="color:var(--green);border-left:1px solid var(--border);" title="Bitácora de casos resueltos">📋 Casos</button>
     <button class="nav-btn" onclick="showAccesos()" style="color:#7aaeff;border-left:1px solid var(--border);" title="Accesos rápidos">🚀 Accesos</button>
   </div>
 </div>
@@ -926,6 +951,8 @@ function loadFromDrive() {
         });
         // Ensure accesos exist
         if(!db.accesos) db.accesos = JSON.parse(JSON.stringify(DEFAULT_ACCESOS));
+        // Ensure casos exist
+        if(!db.casos) db.casos = [];
         initApp(); setSyncing(false);
         toast('☁️ '+db.commands.length+' comandos cargados');
       });
@@ -1204,6 +1231,19 @@ function handleSearch(val) {
       html+='</div>';
     });
   }
+  // Buscar también en la bitácora de casos
+  var casosRes = getCasos().filter(function(c){
+    return (c.title||'').toLowerCase().includes(q) || (c.ticket||'').toLowerCase().includes(q) ||
+           (c.catName||'').toLowerCase().includes(q) || (c.problem||'').toLowerCase().includes(q) ||
+           (c.solution||'').toLowerCase().includes(q) || (c.cmds||'').toLowerCase().includes(q) ||
+           (c.tags||[]).some(function(t){ return t.toLowerCase().includes(q); });
+  });
+  if (casosRes.length) {
+    if (!results.length) html = '<div class="subsection">' + casosRes.length + ' resultado(s) para "' + esc(val) + '"</div>';
+    html += '<div class="subsection" style="margin-top:14px;">📋 Casos — ' + casosRes.length + '</div>';
+    casosRes.forEach(function(c){ html += renderCasoCard(c, true); });
+  }
+
   document.getElementById('searchContent').innerHTML=html;
 }
 
@@ -1241,7 +1281,7 @@ document.addEventListener('keydown', function(e) {
   // Escape — close modals / clear search / close history
   if(e.key==='Escape'){
     if(historyOpen){ toggleHistory(); return; }
-    var modals=['cmdModal','catModal','delCatModal'];
+    var modals=['cmdModal','catModal','delCatModal','accesoModal','casoModal'];
     var closed=false;
     modals.forEach(function(id){
       if(document.getElementById(id).classList.contains('open')){
@@ -1257,6 +1297,7 @@ document.addEventListener('keydown', function(e) {
   if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){
     if(document.getElementById('cmdModal').classList.contains('open')) saveCmd();
     if(document.getElementById('catModal').classList.contains('open')) saveCategory();
+    if(document.getElementById('casoModal').classList.contains('open')) saveCaso();
   }
   // H — toggle history (when not typing)
   if(e.key==='h'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){
@@ -1267,7 +1308,7 @@ document.addEventListener('keydown', function(e) {
 /* ══════════════════════════════════════
    CLOSE MODALS ON OVERLAY
 ══════════════════════════════════════ */
-['cmdModal','catModal','delCatModal','accesoModal'].forEach(function(id){
+['cmdModal','catModal','delCatModal','accesoModal','casoModal'].forEach(function(id){
   var el = document.getElementById(id);
   if(!el) return;
   el.addEventListener('click',function(e){
@@ -1276,6 +1317,7 @@ document.addEventListener('keydown', function(e) {
       if(id==='catModal') closeCatModal();
       if(id==='delCatModal') closeDelCatModal();
       if(id==='accesoModal') closeAccesoModal();
+      if(id==='casoModal') closeCasoModal();
     }
   });
 });
@@ -1524,6 +1566,150 @@ function deleteAcceso(id) {
 
 
 
+/* ══════════════════════════════════════
+   CASOS / BITÁCORA DE TROUBLESHOOTING
+══════════════════════════════════════ */
+function getCasos() {
+  if (db && db.casos) return db.casos;
+  return [];
+}
+
+function showCasos() {
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('searchResults').classList.remove('active');
+  document.getElementById('searchInput').value = '';
+  currentCat = null;
+
+  var casos = getCasos().slice().sort(function(a,b){ return (b.created||0)-(a.created||0); });
+  var html = '<div class="accesos-header">' +
+    '<div class="accesos-title">📋 Bitácora de Casos</div>' +
+    '<div style="display:flex;align-items:center;gap:10px;">' +
+      '<span class="section-meta">' + casos.length + ' caso(s)</span>' +
+      '<button class="btn btn-green" onclick="openCasoModal()">➕ Nuevo caso</button>' +
+    '</div>' +
+  '</div>';
+
+  if (!casos.length) {
+    html += '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Sin casos documentados</div><div class="empty-desc">Cuando resuelvas un caso, regístralo aquí:<br>problema, solución y comandos que funcionaron.<br>La próxima vez ya tienes el troubleshooting listo.</div></div>';
+  } else {
+    casos.forEach(function(c){ html += renderCasoCard(c, false); });
+  }
+  document.getElementById('sectionContent').innerHTML = html;
+}
+
+function renderCasoCard(c, forceOpen) {
+  var fecha = '';
+  if (c.created) {
+    var d = new Date(c.created);
+    fecha = d.toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' });
+  }
+  var cmds = (c.cmds||'').split('\n').filter(function(l){ return l.trim(); });
+  var cmdHtml = '';
+  if (cmds.length) {
+    cmdHtml += '<div class="caso-label">⌨ Comandos que funcionaron</div><div class="caso-cmds">';
+    cmds.forEach(function(line){
+      var isC = line.trim().charAt(0) === '#';
+      var enc = encodeURIComponent(line).replace(/'/g,'%27');
+      cmdHtml += '<div class="caso-cmd-line"><code class="' + (isC?'comment':'') + '">' + esc(line) + '</code>' +
+        (isC ? '' : '<button class="copy-btn" onclick="doCopy(this,decodeURIComponent(\'' + enc + '\'),\'\')">COPIAR</button>') +
+      '</div>';
+    });
+    cmdHtml += '</div>';
+  }
+  var meta = '';
+  if (c.ticket)  meta += '<span class="caso-badge ticket">🎫 ' + esc(c.ticket) + '</span>';
+  if (c.catName) meta += '<span class="caso-badge cat">' + esc(c.catName) + '</span>';
+  if (fecha)     meta += '<span class="caso-badge date">📅 ' + fecha + '</span>';
+  (c.tags||[]).forEach(function(t){ meta += '<span class="cmd-tag">' + esc(t) + '</span>'; });
+
+  return '<div class="caso-card' + (forceOpen?' open':'') + '" id="caso-' + c.id + '">' +
+    '<div class="caso-head" onclick="toggleCaso(\'' + c.id + '\')">' +
+      '<div><div class="caso-title">' + esc(c.title) + '</div><div class="caso-meta">' + meta + '</div></div>' +
+      '<span class="caso-chevron">▶</span>' +
+    '</div>' +
+    '<div class="caso-body">' +
+      '<div class="caso-label">🔴 Problema</div><div class="caso-text">' + esc(c.problem) + '</div>' +
+      '<div class="caso-label">✅ Solución</div><div class="caso-text">' + esc(c.solution) + '</div>' +
+      cmdHtml +
+      '<div class="caso-actions">' +
+        '<button class="edit-btn" onclick="openEditCasoModal(\'' + c.id + '\')">✏️ Editar</button>' +
+        '<button class="del-btn" onclick="deleteCaso(\'' + c.id + '\')">🗑 Eliminar</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function toggleCaso(id) {
+  var el = document.getElementById('caso-' + id);
+  if (el) el.classList.toggle('open');
+}
+
+function openCasoModal() {
+  document.getElementById('casoModalTitle').textContent = '📋 Nuevo caso';
+  ['caso-edit-id','caso-title','caso-ticket','caso-cat','caso-tags','caso-problem','caso-solution','caso-cmds'].forEach(function(id){
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('casoModal').classList.add('open');
+  setTimeout(function(){ document.getElementById('caso-title').focus(); }, 100);
+}
+
+function openEditCasoModal(id) {
+  var c = getCasos().find(function(x){ return x.id === id; });
+  if (!c) return;
+  document.getElementById('casoModalTitle').textContent = '✏️ Editar caso';
+  document.getElementById('caso-edit-id').value = id;
+  document.getElementById('caso-title').value   = c.title || '';
+  document.getElementById('caso-ticket').value  = c.ticket || '';
+  document.getElementById('caso-cat').value     = c.catName || '';
+  document.getElementById('caso-tags').value    = (c.tags||[]).join(', ');
+  document.getElementById('caso-problem').value = c.problem || '';
+  document.getElementById('caso-solution').value = c.solution || '';
+  document.getElementById('caso-cmds').value    = c.cmds || '';
+  document.getElementById('casoModal').classList.add('open');
+}
+
+function closeCasoModal() {
+  document.getElementById('casoModal').classList.remove('open');
+}
+
+function saveCaso() {
+  var title    = (document.getElementById('caso-title').value||'').trim();
+  var problem  = (document.getElementById('caso-problem').value||'').trim();
+  var solution = (document.getElementById('caso-solution').value||'').trim();
+  if (!title || !problem || !solution) { toast('⚠️ Título, problema y solución son obligatorios'); return; }
+  var data = {
+    title: title,
+    ticket: (document.getElementById('caso-ticket').value||'').trim(),
+    catName: (document.getElementById('caso-cat').value||'').trim(),
+    tags: (document.getElementById('caso-tags').value||'').split(',').map(function(t){ return t.trim().toLowerCase(); }).filter(Boolean),
+    problem: problem,
+    solution: solution,
+    cmds: (document.getElementById('caso-cmds').value||'').replace(/\s+$/,'')
+  };
+  if (!db.casos) db.casos = [];
+  var id = document.getElementById('caso-edit-id').value;
+  if (id) {
+    db.casos = db.casos.map(function(c){ return c.id===id ? Object.assign({}, c, data, {updated: Date.now()}) : c; });
+    toast('✏️ Caso actualizado');
+  } else {
+    db.casos.push(Object.assign({ id:'caso_'+Date.now(), created: Date.now() }, data));
+    toast('✅ Caso guardado');
+  }
+  closeCasoModal();
+  saveToDrive();
+  showCasos();
+}
+
+function deleteCaso(id) {
+  var c = getCasos().find(function(x){ return x.id === id; });
+  if (c && !window.confirm('¿Eliminar el caso "' + c.title + '"?\n\nEsta acción no se puede deshacer.')) return;
+  db.casos = (db.casos||[]).filter(function(x){ return x.id !== id; });
+  saveToDrive();
+  showCasos();
+  toast('🗑️ Caso eliminado');
+}
+
+
 loadHistory();
 showScreen('notConnected');
 window.addEventListener('load', function(){
@@ -1599,6 +1785,58 @@ window.addEventListener('load', function(){
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeAccesoModal()">Cancelar</button>
       <button class="btn btn-green" onclick="saveAcceso()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CASO MODAL ═══ -->
+<div class="modal-overlay" id="casoModal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-title" id="casoModalTitle">📋 Nuevo caso</div>
+    <input type="hidden" id="caso-edit-id">
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="form-group">
+        <label class="form-label">Título del caso *</label>
+        <input class="form-input" id="caso-title" type="text" placeholder="ej: VPN S2S cae intermitente con error IKE fase 2">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Ticket / Referencia</label>
+        <input class="form-input" id="caso-ticket" type="text" placeholder="ej: INC-45213, Caso TAC 6-000...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Categoría</label>
+        <input class="form-input" id="caso-cat" type="text" placeholder="ej: VPN, Cluster, Maestro...">
+      </div>
+    </div>
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="form-group">
+        <label class="form-label">Tags (separados por coma)</label>
+        <input class="form-input" id="caso-tags" type="text" placeholder="ike, drops, r81.20">
+      </div>
+    </div>
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="form-group">
+        <label class="form-label">Problema (qué reportaron / síntomas) *</label>
+        <textarea class="form-textarea" id="caso-problem" rows="3" placeholder="¿Qué reportó el cliente? ¿Mensajes de error? ¿Síntomas?"></textarea>
+      </div>
+    </div>
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="form-group">
+        <label class="form-label">Solución / Diagnóstico paso a paso *</label>
+        <textarea class="form-textarea" id="caso-solution" rows="4" placeholder="Cómo lo diagnosticaste y lo resolviste."></textarea>
+      </div>
+    </div>
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="form-group">
+        <label class="form-label">Comandos que funcionaron (uno por línea, # = comentario)</label>
+        <textarea class="form-textarea" id="caso-cmds" rows="4" placeholder="vpn tu tlist -b&#10;# filtrar por peer&#10;fw ctl zdebug + drop | grep 10.1.1.5"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeCasoModal()">Cancelar</button>
+      <button class="btn btn-green" onclick="saveCaso()">💾 Guardar <span class="kbd">Ctrl+↵</span></button>
     </div>
   </div>
 </div>
