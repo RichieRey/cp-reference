@@ -1,4 +1,4 @@
-const CACHE = 'safeid-cp-v11';
+const CACHE = 'safeid-cp-v12';
 const ASSETS = [
   '/cp-reference/',
   '/cp-reference/index.html',
@@ -6,6 +6,8 @@ const ASSETS = [
   '/cp-reference/manifest.json',
   '/cp-reference/icons/icon-192.png',
   '/cp-reference/icons/icon-512.png',
+  '/cp-reference/icons/icon-192-maskable.png',
+  '/cp-reference/icons/icon-512-maskable.png',
 ];
 
 self.addEventListener('install', function(e) {

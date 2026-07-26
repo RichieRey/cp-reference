@@ -1899,11 +1899,6 @@ function buildCasoReport(c){
   L.push('');
   L.push('▶ SOLUCIÓN');
   L.push(c.solution || '');
-  if (c.cmds) {
-    L.push('');
-    L.push('▶ COMANDOS UTILIZADOS');
-    L.push(c.cmds);
-  }
   if (c.evidence) {
     L.push('');
     L.push('▶ EVIDENCIA');
@@ -1913,14 +1908,77 @@ function buildCasoReport(c){
   L.push('Generado desde CheckPoint Reference · SafeID');
   return L.join('\n');
 }
+function nl2brHtml(s, mono){
+  var t = esc(s || '');
+  if (mono) t = t.replace(/ {2}/g, '&nbsp; ');
+  return t.replace(/\n/g, '<br>');
+}
+function buildCasoReportHTML(c){
+  var d = c.created ? new Date(c.created).toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}) : '';
+  var navy = '#1D3557', gold = '#C8922A';
+  var h = '<div style="font-family:Segoe UI,Arial,sans-serif;font-size:13px;color:#2c3e50;line-height:1.6;">';
+  /* Encabezado */
+  h += '<div style="border-left:4px solid ' + gold + ';padding:10px 14px;background:#f4f6fa;">';
+  h += '<div style="font-size:16px;font-weight:bold;color:' + navy + ';">' + esc(c.title) + '</div>';
+  var meta = [];
+  if (c.ticket)  meta.push('<b>Ticket:</b> ' + esc(c.ticket));
+  if (c.catName) meta.push('<b>Categor\u00eda:</b> ' + esc(c.catName));
+  if (d)         meta.push('<b>Fecha:</b> ' + d);
+  if (meta.length) h += '<div style="font-size:12px;color:#5d6d7e;margin-top:4px;">' + meta.join(' &nbsp;|&nbsp; ') + '</div>';
+  if (c.tags && c.tags.length) {
+    h += '<div style="margin-top:6px;">';
+    c.tags.forEach(function(t){
+      h += '<span style="display:inline-block;font-size:10px;font-family:Consolas,monospace;background:#fdf6e9;color:' + gold + ';border:1px solid #ead9b8;border-radius:10px;padding:1px 8px;margin-right:4px;">' + esc(t) + '</span>';
+    });
+    h += '</div>';
+  }
+  h += '</div>';
+  /* Problema */
+  h += '<div style="margin-top:14px;"><span style="font-weight:bold;font-size:12px;letter-spacing:1px;color:#c0392b;">&#9679; PROBLEMA</span></div>';
+  h += '<div style="margin-top:4px;">' + nl2brHtml(c.problem) + '</div>';
+  /* Solución */
+  h += '<div style="margin-top:14px;"><span style="font-weight:bold;font-size:12px;letter-spacing:1px;color:#1e8449;">&#10004; SOLUCI\u00d3N</span></div>';
+  h += '<div style="margin-top:4px;">' + nl2brHtml(c.solution) + '</div>';
+  /* Evidencia estilo consola */
+  if (c.evidence) {
+    h += '<div style="margin-top:14px;"><span style="font-weight:bold;font-size:12px;letter-spacing:1px;color:' + navy + ';">&#129534; EVIDENCIA</span></div>';
+    h += '<div style="margin-top:6px;background:#0f1520;color:#9fb6d4;font-family:Consolas,Courier New,monospace;font-size:11.5px;line-height:1.55;padding:12px 14px;border:1px solid #22304a;border-radius:6px;">' + nl2brHtml(c.evidence, true) + '</div>';
+  }
+  /* Pie */
+  h += '<div style="margin-top:16px;font-size:11px;color:#95a5a6;border-top:1px solid #e1e5ea;padding-top:6px;">Generado desde CheckPoint Reference &middot; <span style="color:' + gold + ';font-weight:bold;">SafeID</span></div>';
+  h += '</div>';
+  return h;
+}
+function fallbackRich(html, txt, cb){
+  var div = document.createElement('div');
+  div.setAttribute('contenteditable', 'true');
+  div.style.cssText = 'position:fixed;top:0;left:0;width:2px;height:2px;opacity:0;overflow:hidden;';
+  div.innerHTML = html;
+  document.body.appendChild(div);
+  var range = document.createRange();
+  range.selectNodeContents(div);
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  var okCopy = false;
+  try { okCopy = document.execCommand('copy'); } catch(e) {}
+  sel.removeAllRanges();
+  document.body.removeChild(div);
+  if (okCopy) cb(); else fallback(txt, cb);
+}
 function copyCasoReport(id){
   var c = getCasos().find(function(x){ return x.id === id; });
   if (!c) return;
-  var txt = buildCasoReport(c);
+  var txt  = buildCasoReport(c);
+  var html = buildCasoReportHTML(c);
   function ok(){ toast('📄 Informe copiado — pégalo en tu ticket'); }
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(txt).then(ok).catch(function(){ fallback(txt, ok); });
-  } else { fallback(txt, ok); }
+  if (navigator.clipboard && window.ClipboardItem && window.isSecureContext) {
+    var item = new ClipboardItem({
+      'text/html':  new Blob([html], {type: 'text/html'}),
+      'text/plain': new Blob([txt],  {type: 'text/plain'})
+    });
+    navigator.clipboard.write([item]).then(ok).catch(function(){ fallbackRich(html, txt, ok); });
+  } else { fallbackRich(html, txt, ok); }
 }
 function printCaso(id){
   var c = getCasos().find(function(x){ return x.id === id; });
@@ -1928,7 +1986,6 @@ function printCaso(id){
   var d = c.created ? new Date(c.created).toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}) : '';
   var w = window.open('', '_blank');
   if (!w) { toast('⚠️ Permite ventanas emergentes para exportar', true); return; }
-  var cmds = (c.cmds||'').split('\n').filter(function(l){ return l.trim(); }).map(function(l){ return '<div class="cl">' + esc(l) + '</div>'; }).join('');
   var meta = [c.ticket ? ('🎫 ' + esc(c.ticket)) : '', c.catName ? esc(c.catName) : '', d, (c.tags && c.tags.length) ? ('Tags: ' + esc(c.tags.join(', '))) : ''].filter(Boolean).join(' &nbsp;·&nbsp; ');
   w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(c.title) + '</title><style>' +
     'body{font-family:Segoe UI,Arial,sans-serif;color:#1a2535;max-width:760px;margin:40px auto;padding:0 24px;line-height:1.6}' +
@@ -1936,8 +1993,6 @@ function printCaso(id){
     '.meta{font-size:12px;color:#5b7189;margin-bottom:24px}' +
     'h2{font-size:13px;text-transform:uppercase;letter-spacing:2px;color:#8a6400;margin:26px 0 8px}' +
     'p{white-space:pre-wrap;font-size:14px;margin:0}' +
-    '.cmds{background:#0f1520;border-radius:8px;padding:14px 16px;margin-top:8px}' +
-    '.cl{font-family:Consolas,monospace;font-size:12.5px;color:#7ee787;padding:2px 0;white-space:pre-wrap;word-break:break-all}' +
     '.foot{margin-top:36px;font-size:11px;color:#8a97a8;border-top:1px solid #d6dee8;padding-top:10px}' +
     '@media print{body{margin:10mm auto}}' +
   '</style></head><body>' +
@@ -1945,7 +2000,6 @@ function printCaso(id){
     '<div class="meta">' + meta + '</div>' +
     '<h2>Problema</h2><p>' + esc(c.problem) + '</p>' +
     '<h2>Solución</h2><p>' + esc(c.solution) + '</p>' +
-    (cmds ? '<h2>Comandos utilizados</h2><div class="cmds">' + cmds + '</div>' : '') +
     (c.evidence ? '<h2>Evidencia</h2><p style="font-family:Consolas,monospace;font-size:12px;background:#f4f7fa;border:1px solid #d6dee8;padding:12px;border-radius:8px;">' + esc(c.evidence) + '</p>' : '') +
     '<div class="foot">Generado desde CheckPoint Reference · SafeID</div>' +
   '</body></html>');
