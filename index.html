@@ -433,6 +433,7 @@ body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono',
       </div>
       <div class="logo-divider"></div>
       <div class="logo-module">Check Point <span>Reference</span></div>
+      <span id="appVer" style="font-size:10px;color:var(--muted,#8a97a8);font-family:Consolas,monospace;margin-left:8px;align-self:flex-end;padding-bottom:2px;"></span>
     </div>
     <div class="header-controls">
       <div class="auth-status">
@@ -2093,6 +2094,19 @@ window.addEventListener('load', function(){
       });
       // Force check for update
       reg.update();
+      // Pintar la versión activa en el header
+      function paintVer(){
+        if(navigator.serviceWorker.controller){
+          var mc = new MessageChannel();
+          mc.port1.onmessage = function(ev){
+            var el = document.getElementById('appVer');
+            if(el && ev.data){ el.textContent = String(ev.data).replace('safeid-cp-',''); }
+          };
+          navigator.serviceWorker.controller.postMessage({type:'GET_VERSION'}, [mc.port2]);
+        }
+      }
+      paintVer();
+      navigator.serviceWorker.addEventListener('controllerchange', paintVer);
     }).catch(function(){});
 
     // When new SW takes control, reload

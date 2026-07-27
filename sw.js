@@ -1,4 +1,4 @@
-const CACHE = 'safeid-cp-v14';
+const CACHE = 'safeid-cp-v15';
 const ASSETS = [
   '/cp-reference/',
   '/cp-reference/index.html',
@@ -36,10 +36,32 @@ self.addEventListener('activate', function(e) {
 });
 
 self.addEventListener('fetch', function(e) {
-  if (e.request.url.includes('googleapis.com') ||
-      e.request.url.includes('accounts.google.com') ||
-      e.request.url.includes('fonts.googleapis.com') ||
-      e.request.url.includes('fonts.gstatic.com')) {
+  var url = e.request.url;
+  if (url.includes('googleapis.com') ||
+      url.includes('accounts.google.com') ||
+      url.includes('fonts.googleapis.com') ||
+      url.includes('fonts.gstatic.com')) {
+    return;
+  }
+
+  var isHTML = e.request.mode === 'navigate' ||
+               url.endsWith('.html') ||
+               url.endsWith('/cp-reference/');
+
+  if (isHTML) {
+    e.respondWith(
+      fetch(e.request).then(function(response) {
+        if (response && response.status === 200) {
+          var clone = response.clone();
+          caches.open(CACHE).then(function(cache) { cache.put(e.request, clone); });
+        }
+        return response;
+      }).catch(function() {
+        return caches.match(e.request).then(function(cached) {
+          return cached || caches.match('/cp-reference/index.html');
+        });
+      })
+    );
     return;
   }
 
@@ -64,5 +86,8 @@ self.addEventListener('fetch', function(e) {
 self.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  if (e.data && e.data.type === 'GET_VERSION') {
+    if (e.ports && e.ports[0]) e.ports[0].postMessage(CACHE);
   }
 });
