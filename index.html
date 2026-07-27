@@ -1921,23 +1921,24 @@ function nl2brHtml(s, mono){
 function buildCasoReportHTML(c){
   var d = c.created ? new Date(c.created).toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}) : '';
   var navy = '#1D3557', gold = '#C8922A';
+  function fc(color, txt){ return '<font color="' + color + '">' + txt + '</font>'; }
   function metaRow(k, v){
-    return '<tr><td bgcolor="#eef2f8" style="border:1px solid #d6dee8;background-color:#eef2f8;color:' + navy + ';font-weight:bold;padding:4px 14px;white-space:nowrap;font-size:12px;">' + k + '</td>' +
-           '<td style="border:1px solid #d6dee8;padding:4px 14px;font-size:12px;">' + v + '</td></tr>';
+    return '<tr><td bgcolor="#eef2f8" style="border:1px solid #d6dee8;background-color:#eef2f8;color:' + navy + ';font-weight:bold;padding:4px 14px;white-space:nowrap;font-size:12px;">' + fc(navy, k) + '</td>' +
+           '<td style="border:1px solid #d6dee8;padding:4px 14px;font-size:12px;color:#2c3e50;">' + fc('#2c3e50', v) + '</td></tr>';
   }
   function secLabel(color, txt){
-    return '<tr><td style="padding:14px 0 0 0;"><span style="font-weight:bold;font-size:12px;letter-spacing:1px;color:' + color + ';">' + txt + '</span></td></tr>';
+    return '<tr><td style="padding:14px 0 0 0;color:' + color + ';font-weight:bold;font-size:12px;letter-spacing:1px;">' + fc(color, txt) + '</td></tr>';
   }
   function secBody(txt){
-    return '<tr><td style="padding:4px 0 0 0;font-size:13px;color:#2c3e50;line-height:1.6;">' + txt + '</td></tr>';
+    return '<tr><td style="padding:4px 0 0 0;font-size:13px;color:#2c3e50;line-height:1.6;">' + fc('#2c3e50', txt) + '</td></tr>';
   }
   var h = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:Segoe UI,Arial,sans-serif;font-size:13px;color:#2c3e50;">';
   /* Franja corporativa SafeID */
   h += '<tr><td bgcolor="#1D3557" style="background-color:' + navy + ';padding:10px 16px;">' +
-       '<span style="color:' + gold + ';font-weight:bold;font-size:15px;letter-spacing:1px;">SafeID</span>' +
-       '<span style="color:#d7e0ee;font-size:12px;">&nbsp;&nbsp;&middot;&nbsp;&nbsp;Informe de Caso</span></td></tr>';
+       '<font color="' + gold + '"><span style="font-weight:bold;font-size:15px;letter-spacing:1px;">SafeID</span></font>' +
+       '<font color="#d7e0ee"><span style="font-size:12px;">&nbsp;&nbsp;&middot;&nbsp;&nbsp;Informe de Caso</span></font></td></tr>';
   /* Título */
-  h += '<tr><td bgcolor="#f4f6fa" style="background-color:#f4f6fa;border-left:4px solid ' + gold + ';padding:10px 14px;font-size:16px;font-weight:bold;color:' + navy + ';">' + esc(c.title) + '</td></tr>';
+  h += '<tr><td bgcolor="#f4f6fa" style="background-color:#f4f6fa;border-left:4px solid ' + gold + ';padding:10px 14px;font-size:16px;font-weight:bold;color:' + navy + ';">' + fc(navy, esc(c.title)) + '</td></tr>';
   /* Tabla de datos */
   var rows = '';
   if (c.client)  rows += metaRow('Cliente', esc(c.client));
@@ -1955,12 +1956,12 @@ function buildCasoReportHTML(c){
   if (c.evidence) {
     h += secLabel(navy, '&#129534; EVIDENCIA');
     h += '<tr><td style="padding:6px 0 0 0;"><table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;"><tr>' +
-         '<td bgcolor="#0f1520" style="background-color:#0f1520;color:#9fb6d4;font-family:Consolas,Courier New,monospace;font-size:11.5px;line-height:1.55;padding:12px 14px;border:1px solid #22304a;">' + nl2brHtml(c.evidence, true) + '</td>' +
+         '<td bgcolor="#0f1520" style="background-color:#0f1520;color:#9fb6d4;font-family:Consolas,Courier New,monospace;font-size:11.5px;line-height:1.55;padding:12px 14px;border:1px solid #22304a;">' + fc('#9fb6d4', nl2brHtml(c.evidence, true)) + '</td>' +
          '</tr></table></td></tr>';
   }
   /* Pie */
   h += '<tr><td style="padding:16px 0 0 0;"><table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;"><tr>' +
-       '<td style="border-top:1px solid #e1e5ea;padding:6px 0 0 0;font-size:11px;color:#95a5a6;">Generado desde CheckPoint Reference &middot; <span style="color:' + gold + ';font-weight:bold;">SafeID</span></td>' +
+       '<td style="border-top:1px solid #e1e5ea;padding:6px 0 0 0;font-size:11px;color:#95a5a6;">' + fc('#95a5a6', 'Generado desde CheckPoint Reference &middot; ') + '<font color="' + gold + '"><span style="font-weight:bold;">SafeID</span></font></td>' +
        '</tr></table></td></tr>';
   h += '</table>';
   return h;
