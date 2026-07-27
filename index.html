@@ -1926,8 +1926,12 @@ function buildCasoReportHTML(c){
     return '<tr><td bgcolor="#eef2f8" style="border:1px solid #d6dee8;background-color:#eef2f8;color:' + navy + ';font-weight:bold;padding:4px 14px;white-space:nowrap;font-size:12px;">' + fc(navy, k) + '</td>' +
            '<td style="border:1px solid #d6dee8;padding:4px 14px;font-size:12px;color:#2c3e50;">' + fc('#2c3e50', v) + '</td></tr>';
   }
-  function secLabel(color, txt){
-    return '<tr><td style="padding:14px 0 0 0;color:' + color + ';font-weight:bold;font-size:12px;letter-spacing:1px;">' + fc(color, txt) + '</td></tr>';
+  function secLabel(bg, fg, txt){
+    return '<tr><td style="padding:14px 0 4px 0;">' +
+      '<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;"><tr>' +
+      '<td bgcolor="' + bg + '" style="background-color:' + bg + ';color:' + fg + ';font-weight:bold;font-size:12px;letter-spacing:1px;padding:4px 12px;">' +
+      fc(fg, txt) + '</td>' +
+      '</tr></table></td></tr>';
   }
   function secBody(txt){
     return '<tr><td style="padding:4px 0 0 0;font-size:13px;color:#2c3e50;line-height:1.6;">' + fc('#2c3e50', txt) + '</td></tr>';
@@ -1947,14 +1951,14 @@ function buildCasoReportHTML(c){
   if (d)         rows += metaRow('Fecha', d);
   if (rows) h += '<tr><td style="padding:12px 0 0 0;"><table cellpadding="0" cellspacing="0" style="border-collapse:collapse;">' + rows + '</table></td></tr>';
   /* Problema */
-  h += secLabel('#c0392b', '&#9679; PROBLEMA');
+  h += secLabel('#FCEBEB', '#A32D2D', '&#9679; PROBLEMA');
   h += secBody(nl2brHtml(c.problem));
   /* Solución */
-  h += secLabel('#1e8449', '&#10004; SOLUCI\u00d3N');
+  h += secLabel('#EAF3DE', '#27500A', '&#10004; SOLUCI\u00d3N');
   h += secBody(nl2brHtml(c.solution));
   /* Evidencia estilo consola */
   if (c.evidence) {
-    h += secLabel(navy, '&#129534; EVIDENCIA');
+    h += secLabel('#E6F1FB', '#0C447C', '&#129534; EVIDENCIA');
     h += '<tr><td style="padding:6px 0 0 0;"><table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;"><tr>' +
          '<td bgcolor="#0f1520" style="background-color:#0f1520;color:#9fb6d4;font-family:Consolas,Courier New,monospace;font-size:11.5px;line-height:1.55;padding:12px 14px;border:1px solid #22304a;">' + fc('#9fb6d4', nl2brHtml(c.evidence, true)) + '</td>' +
          '</tr></table></td></tr>';
