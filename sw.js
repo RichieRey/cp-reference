@@ -1,4 +1,4 @@
-const CACHE = 'safeid-cp-v18';
+const CACHE = 'safeid-cp-v19';
 const ASSETS = [
   '/cp-reference/',
   '/cp-reference/index.html',
@@ -9,7 +9,7 @@ const ASSETS = [
   '/cp-reference/icons/icon-192-maskable.png',
   '/cp-reference/icons/icon-512-maskable.png',
 ];
-
+ 
 self.addEventListener('install', function(e) {
   e.waitUntil(
     caches.open(CACHE).then(function(cache) {
@@ -22,7 +22,7 @@ self.addEventListener('install', function(e) {
   );
   self.skipWaiting();
 });
-
+ 
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
@@ -34,20 +34,25 @@ self.addEventListener('activate', function(e) {
   );
   self.clients.claim();
 });
-
+ 
 self.addEventListener('fetch', function(e) {
   var url = e.request.url;
   if (url.includes('googleapis.com') ||
+      url.includes('googleusercontent.com') ||
       url.includes('accounts.google.com') ||
       url.includes('fonts.googleapis.com') ||
-      url.includes('fonts.gstatic.com')) {
+      url.includes('fonts.gstatic.com') ||
+      url.includes('firebaseapp.com') ||
+      url.includes('firebaseio.com')) {
+    // Firestore, Firebase Auth y APIs de Google: siempre red, nunca cache
+    // (incluye firestore.googleapis.com, identitytoolkit.googleapis.com, securetoken.googleapis.com)
     return;
   }
-
+ 
   var isHTML = e.request.mode === 'navigate' ||
                url.endsWith('.html') ||
                url.endsWith('/cp-reference/');
-
+ 
   if (isHTML) {
     e.respondWith(
       fetch(e.request).then(function(response) {
@@ -64,7 +69,7 @@ self.addEventListener('fetch', function(e) {
     );
     return;
   }
-
+ 
   e.respondWith(
     caches.match(e.request).then(function(cached) {
       if (cached) return cached;
@@ -82,7 +87,7 @@ self.addEventListener('fetch', function(e) {
     })
   );
 });
-
+ 
 self.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
@@ -91,3 +96,4 @@ self.addEventListener('message', function(e) {
     if (e.ports && e.ports[0]) e.ports[0].postMessage(CACHE);
   }
 });
+ 
