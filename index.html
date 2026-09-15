@@ -451,7 +451,7 @@ body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono',
       <!-- Install -->
       <button class="btn-auth btn-install" id="installBtn" onclick="installPWA()">📲 Instalar</button>
       <!-- Auth -->
-      <button class="btn-auth btn-signin" id="authBtn" onclick="handleAuth()">Conectar Drive</button>
+      <button class="btn-auth btn-signin" id="authBtn" onclick="handleAuth()">Conectar</button>
     </div>
   </div>
   <div class="search-row">
@@ -485,14 +485,14 @@ body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono',
 <div class="main">
   <div id="notConnected" class="state-screen">
     <div class="state-icon">☁️</div>
-    <div class="state-title">Conecta tu Google Drive</div>
-    <div class="state-desc">Todos los comandos viven en tu Drive.<br>Accede desde cualquier PC o celular.</div>
-    <button class="btn btn-green" onclick="handleAuth()">Conectar Google Drive</button>
+    <div class="state-title">Conecta tu cuenta</div>
+    <div class="state-desc">Todos los comandos viven en tu base de datos.<br>Accede desde cualquier PC o celular.</div>
+    <button class="btn btn-green" onclick="handleAuth()">Conectar con Google</button>
   </div>
   <div id="loadingScreen" class="state-screen" style="display:none;">
     <div class="state-icon">⏳</div>
     <div class="state-title">Cargando...</div>
-    <div class="state-desc">Sincronizando con Google Drive</div>
+    <div class="state-desc">Sincronizando</div>
   </div>
   <div id="appContent">
     <div class="search-results" id="searchResults"><div id="searchContent"></div></div>
@@ -608,17 +608,30 @@ body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono',
 <div class="toast" id="toast"></div>
 <div class="undo-bar" id="undoBar"><span id="undoMsg"></span><button class="undo-btn" onclick="doUndo()">DESHACER</button></div>
 
-<script src="https://accounts.google.com/gsi/client" async></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-var CLIENT_ID  = '668930269753-8qvida9c3s1ureldvr5etmcgoeg0o3uh.apps.googleusercontent.com';
-var SCOPES     = 'https://www.googleapis.com/auth/drive.file';
-var DRIVE_FILE = 'safeid_cp_comandos.json';
-var HINT_KEY   = 'safeid_gdrive_connected';
 var THEME_KEY  = 'safeid_theme';
 var HIST_KEY   = 'safeid_history';
+
+// ⚠️ Reemplaza con la config de TU proyecto Firebase:
+// Firebase Console → ⚙️ Configuración del proyecto → "Tus apps" → SDK setup and configuration → Config
+var firebaseConfig = {
+  apiKey: "AIzaSyAaez-9GpaPHDbNScGv7eLzo-Er4uN1W8U",
+  authDomain: "cp-reference.firebaseapp.com",
+  projectId: "cp-reference",
+  storageBucket: "cp-reference.firebasestorage.app",
+  messagingSenderId: "65223450172",
+  appId: "1:65223450172:web:ab1cb8d1fa1471a86ded39"
+};
+firebase.initializeApp(firebaseConfig);
+var fsAuth = firebase.auth();
+var fsDb   = firebase.firestore();
+try { fsDb.enablePersistence({ synchronizeTabs: true }); } catch(e) { console.warn('Persistencia offline no disponible:', e); }
 
 /* ══════════════════════════════════════
    DEFAULT DB
@@ -717,11 +730,9 @@ var DEFAULT_DB = {
 /* ══════════════════════════════════════
    STATE
 ══════════════════════════════════════ */
-var accessToken   = null;
-var driveFileId   = null;
 var db            = null;
-var tokenClient   = null;
 var currentCat    = null;
+var activeSection = 'cat'; // 'cat' | 'casos' | 'accesos'
 var pendingDelCat = null;
 var currentView   = 'card'; // 'card' | 'table'
 var verFilter     = 'all';
@@ -877,56 +888,45 @@ function setVersionCheckboxes(versions) {
 }
 
 /* ══════════════════════════════════════
-   GOOGLE AUTH
+   AUTH (Firebase)
 ══════════════════════════════════════ */
-function initGoogleAuth() {
-  if (!window.google) { setTimeout(initGoogleAuth, 400); return; }
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID, scope: SCOPES, callback: onTokenResponse
-  });
-  var was = false;
-  try { was = localStorage.getItem(HINT_KEY) === '1'; } catch(e){}
-  if (was) { setTimeout(function(){ if(!accessToken && tokenClient) tokenClient.requestAccessToken({prompt:''}); }, 600); }
-}
-
-function onTokenResponse(resp) {
-  if (resp.error) {
-    if (resp.error==='interaction_required'||resp.error==='access_denied') { showScreen('notConnected'); return; }
-    toast('❌ Error Google: ' + resp.error, true); return;
+fsAuth.onAuthStateChanged(function(user) {
+  unsubscribeAll();
+  if (user) {
+    setAuthUI(true);
+    showScreen('loading');
+    loadFromFirestore();
+  } else {
+    db = null;
+    setAuthUI(false);
+    showScreen('notConnected');
   }
-  accessToken = resp.access_token;
-  try { localStorage.setItem(HINT_KEY,'1'); } catch(e){}
-  setAuthUI(true);
-  showScreen('loading');
-  loadFromDrive();
-  setTimeout(function(){ if(accessToken&&tokenClient) tokenClient.requestAccessToken({prompt:''}); }, 55*60*1000);
-}
+});
 
 function handleAuth() {
-  if (accessToken) {
-    google.accounts.oauth2.revoke(accessToken, function(){});
-    accessToken=null; driveFileId=null; db=null;
-    try { localStorage.removeItem(HINT_KEY); } catch(e){}
-    setAuthUI(false); showScreen('notConnected'); toast('👋 Sesión cerrada');
+  if (fsAuth.currentUser) {
+    fsAuth.signOut().then(function(){ toast('👋 Sesión cerrada'); });
   } else {
-    if (!tokenClient) { setTimeout(handleAuth,600); return; }
-    tokenClient.requestAccessToken({prompt:'select_account'});
+    var provider = new firebase.auth.GoogleAuthProvider();
+    fsAuth.signInWithPopup(provider).catch(function(e) {
+      if (e.code !== 'auth/popup-closed-by-user') toast('❌ Error Google: ' + e.message, true);
+    });
   }
 }
 
 function setAuthUI(connected) {
   var dot=document.getElementById('authDot'), lbl=document.getElementById('authLabel'), btn=document.getElementById('authBtn');
   if (connected) {
-    dot.className='auth-dot connected'; lbl.className='auth-label connected'; lbl.textContent='Drive conectado';
+    dot.className='auth-dot connected'; lbl.className='auth-label connected'; lbl.textContent='Conectado';
     btn.className='btn-auth btn-signout'; btn.textContent='Desconectar';
   } else {
     dot.className='auth-dot'; lbl.className='auth-label'; lbl.textContent='Sin conectar';
-    btn.className='btn-auth btn-signin'; btn.textContent='Conectar Drive';
+    btn.className='btn-auth btn-signin'; btn.textContent='Conectar';
   }
 }
 function setSyncing(on) {
   var dot=document.getElementById('authDot');
-  dot.className = on ? 'auth-dot syncing' : (accessToken?'auth-dot connected':'auth-dot');
+  dot.className = on ? 'auth-dot syncing' : (fsAuth.currentUser?'auth-dot connected':'auth-dot');
 }
 function showScreen(name) {
   document.getElementById('notConnected').style.display  = name==='notConnected'?'flex':'none';
@@ -935,79 +935,114 @@ function showScreen(name) {
 }
 
 /* ══════════════════════════════════════
-   DRIVE API
+   FIRESTORE — LOAD (listeners en tiempo real)
 ══════════════════════════════════════ */
-function driveReq(method,url,body,ct) {
-  return new Promise(function(res,rej){
-    var xhr=new XMLHttpRequest(); xhr.open(method,url);
-    xhr.setRequestHeader('Authorization','Bearer '+accessToken);
-    if(ct) xhr.setRequestHeader('Content-Type',ct);
-    xhr.onload=function(){ if(xhr.status<300){try{res(JSON.parse(xhr.responseText));}catch(e){res(xhr.responseText);}}else{rej(xhr.status);}};
-    xhr.onerror=function(){rej('Network error');}; xhr.send(body||null);
-  });
+var _unsubs = [];
+function unsubscribeAll() { _unsubs.forEach(function(u){ try{u();}catch(e){} }); _unsubs = []; }
+
+function loadFromFirestore() {
+  db = { categories: [], commands: [], accesos: [], casos: [] };
+  var pending = 4; // categories, commands, accesos, casos
+  var firstLoad = true;
+
+  function onReady() {
+    pending--;
+    if (pending <= 0 && firstLoad) {
+      firstLoad = false;
+      // Primera vez que se conecta: si Firestore está vacío, sembrar con los datos por defecto
+      if (!db.categories.length && !db.commands.length) {
+        seedDefaults().then(function(){ initApp(); setSyncing(false); toast('☁️ Base de datos creada'); });
+      } else {
+        initApp(); setSyncing(false);
+        toast('☁️ '+db.commands.length+' comandos cargados');
+      }
+    } else {
+      refreshView();
+    }
+  }
+
+  setSyncing(true);
+  _unsubs.push(fsDb.collection('categories').onSnapshot(function(snap){
+    db.categories = snap.docs.map(function(d){ return d.data(); });
+    onReady();
+  }, function(e){ setSyncing(false); toast('❌ Error Firestore (categories)',true); console.error(e); }));
+
+  _unsubs.push(fsDb.collection('commands').onSnapshot(function(snap){
+    db.commands = snap.docs.map(function(d){
+      var c = d.data();
+      if(!c.tags) c.tags=[]; if(!c.versions) c.versions=[]; if(!c.notes) c.notes='';
+      return c;
+    });
+    onReady();
+  }, function(e){ setSyncing(false); toast('❌ Error Firestore (commands)',true); console.error(e); }));
+
+  _unsubs.push(fsDb.collection('accesos').onSnapshot(function(snap){
+    db.accesos = snap.docs.map(function(d){ return d.data(); });
+    onReady();
+  }, function(e){ setSyncing(false); toast('❌ Error Firestore (accesos)',true); console.error(e); }));
+
+  _unsubs.push(fsDb.collection('casos').onSnapshot(function(snap){
+    db.casos = snap.docs.map(function(d){ return d.data(); });
+    onReady();
+  }, function(e){ setSyncing(false); toast('❌ Error Firestore (casos)',true); console.error(e); }));
 }
-function findFile() {
-  return driveReq('GET','https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent("name='"+DRIVE_FILE+"' and trashed=false")+'&fields=files(id)');
+
+function refreshView() {
+  if (!db) return;
+  buildNav();
+  if (activeSection === 'casos') showCasos();
+  else if (activeSection === 'accesos') showAccesos();
+  else if (currentCat) renderSection(currentCat);
 }
-function readFile(id) { return driveReq('GET','https://www.googleapis.com/drive/v3/files/'+id+'?alt=media'); }
-function createFile(data) {
-  var b='safeid_b', meta=JSON.stringify({name:DRIVE_FILE,mimeType:'application/json'});
-  var body='--'+b+'\r\nContent-Type: application/json\r\n\r\n'+meta+'\r\n--'+b+'\r\nContent-Type: application/json\r\n\r\n'+JSON.stringify(data)+'\r\n--'+b+'--';
-  return new Promise(function(res,rej){
-    var xhr=new XMLHttpRequest(); xhr.open('POST','https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id');
-    xhr.setRequestHeader('Authorization','Bearer '+accessToken);
-    xhr.setRequestHeader('Content-Type','multipart/related; boundary='+b);
-    xhr.onload=function(){xhr.status<300?res(JSON.parse(xhr.responseText)):rej(xhr.responseText);};
-    xhr.onerror=function(){rej('Network error');}; xhr.send(body);
-  });
-}
-function updateFile(id,data) {
-  return new Promise(function(res,rej){
-    var xhr=new XMLHttpRequest(); xhr.open('PATCH','https://www.googleapis.com/upload/drive/v3/files/'+id+'?uploadType=media');
-    xhr.setRequestHeader('Authorization','Bearer '+accessToken); xhr.setRequestHeader('Content-Type','application/json');
-    xhr.onload=function(){xhr.status<300?res():rej(xhr.responseText);}; xhr.onerror=function(){rej('Network error');};
-    xhr.send(JSON.stringify(data));
-  });
+
+function seedDefaults() {
+  var batch = fsDb.batch();
+  JSON.parse(JSON.stringify(DEFAULT_DB.categories)).forEach(function(c){ batch.set(fsDb.collection('categories').doc(c.id), c); });
+  JSON.parse(JSON.stringify(DEFAULT_DB.commands)).forEach(function(c){ batch.set(fsDb.collection('commands').doc(c.id), c); });
+  JSON.parse(JSON.stringify(DEFAULT_ACCESOS)).forEach(function(a){ batch.set(fsDb.collection('accesos').doc(a.id), a); });
+  return batch.commit();
 }
 
 /* ══════════════════════════════════════
-   LOAD / SAVE
+   FIRESTORE — GUARDAR / BORRAR (por documento)
 ══════════════════════════════════════ */
-function loadFromDrive() {
+function setSyncingBriefly() {
   setSyncing(true);
-  findFile().then(function(res){
-    if(res.files&&res.files.length>0){
-      driveFileId=res.files[0].id;
-      return readFile(driveFileId).then(function(data){
-        db=(data&&data.categories)?data:JSON.parse(JSON.stringify(DEFAULT_DB));
-        // Ensure all commands have new fields
-        db.commands.forEach(function(c){
-          if(!c.tags) c.tags=[];
-          if(!c.versions) c.versions=[];
-          if(!c.notes) c.notes='';
-        });
-        // Ensure accesos exist
-        if(!db.accesos) db.accesos = JSON.parse(JSON.stringify(DEFAULT_ACCESOS));
-        // Ensure casos exist
-        if(!db.casos) db.casos = [];
-        initApp(); setSyncing(false);
-        toast('☁️ '+db.commands.length+' comandos cargados');
-      });
-    } else {
-      db=JSON.parse(JSON.stringify(DEFAULT_DB));
-      return createFile(db).then(function(r){ driveFileId=r.id; initApp(); setSyncing(false); toast('☁️ Base de datos creada'); });
-    }
-  }).catch(function(e){ setSyncing(false); toast('❌ Error al cargar Drive',true); showScreen('notConnected'); console.error(e); });
+  return function(ok){ setSyncing(false); if(!ok) toast('❌ Error al guardar en Firestore', true); };
 }
+function saveCommandDoc(c)  { var done=setSyncingBriefly(); return fsDb.collection('commands').doc(c.id).set(c).then(function(){done(true);}).catch(function(e){done(false);console.error(e);}); }
+function deleteCommandDoc(id){ var done=setSyncingBriefly(); return fsDb.collection('commands').doc(id).delete().then(function(){done(true);}).catch(function(e){done(false);console.error(e);}); }
+function saveCategoryDoc(c) { var done=setSyncingBriefly(); return fsDb.collection('categories').doc(c.id).set(c).then(function(){done(true);}).catch(function(e){done(false);console.error(e);}); }
+function deleteCategoryDoc(id){ var done=setSyncingBriefly(); return fsDb.collection('categories').doc(id).delete().then(function(){done(true);}).catch(function(e){done(false);console.error(e);}); }
+function saveAccesoDoc(a)   { var done=setSyncingBriefly(); return fsDb.collection('accesos').doc(a.id).set(a).then(function(){done(true);}).catch(function(e){done(false);console.error(e);}); }
+function deleteAccesoDoc(id){ var done=setSyncingBriefly(); return fsDb.collection('accesos').doc(id).delete().then(function(){done(true);}).catch(function(e){done(false);console.error(e);}); }
+function saveCasoDoc(c)     { var done=setSyncingBriefly(); return fsDb.collection('casos').doc(c.id).set(c).then(function(){done(true);}).catch(function(e){done(false);console.error(e);}); }
+function deleteCasoDoc(id)  { var done=setSyncingBriefly(); return fsDb.collection('casos').doc(id).delete().then(function(){done(true);}).catch(function(e){done(false);console.error(e);}); }
 
-var _saveTimer = null;
-function saveToDrive() {
-  clearTimeout(_saveTimer);
-  _saveTimer = setTimeout(function(){
-    if(!accessToken||!driveFileId||!db) return;
-    setSyncing(true);
-    updateFile(driveFileId,db).then(function(){ setSyncing(false); }).catch(function(e){ setSyncing(false); toast('❌ Error al guardar',true); });
-  }, 800);
+// Borra varios documentos de una colección en lotes de máx. 450 (límite de Firestore: 500 por batch)
+function deleteAllInCollection(name) {
+  return fsDb.collection(name).get().then(function(snap){
+    var docs = snap.docs, i = 0;
+    function next() {
+      if (i >= docs.length) return Promise.resolve();
+      var batch = fsDb.batch();
+      docs.slice(i, i+450).forEach(function(d){ batch.delete(d.ref); });
+      i += 450;
+      return batch.commit().then(next);
+    }
+    return next();
+  });
+}
+function writeAllToCollection(name, items) {
+  var i = 0;
+  function next() {
+    if (i >= items.length) return Promise.resolve();
+    var batch = fsDb.batch();
+    items.slice(i, i+450).forEach(function(it){ batch.set(fsDb.collection(name).doc(it.id), it); });
+    i += 450;
+    return batch.commit().then(next);
+  }
+  return next();
 }
 
 /* ══════════════════════════════════════
@@ -1030,6 +1065,7 @@ function buildNav() {
   });
 }
 function showCategory(catId) {
+  activeSection='cat';
   currentCat=catId;
   document.querySelectorAll('.nav-tab').forEach(function(t,i){ t.classList.toggle('active',db.categories[i]&&db.categories[i].id===catId); });
   document.getElementById('searchResults').classList.remove('active');
@@ -1173,24 +1209,26 @@ function saveCmd() {
   var tags=currentTags.slice();
   if(!cmd||!desc){toast('⚠️ Comando y descripción son obligatorios');return;}
   var id=document.getElementById('cmd-edit-id').value;
+  var saved;
   if(id){
-    db.commands=db.commands.map(function(c){ return c.id===id?Object.assign({},c,{cmd:cmd,desc:desc,cat:cat,ref:ref,notes:notes,tags:tags,versions:versions}):c; });
+    db.commands=db.commands.map(function(c){ if(c.id!==id) return c; saved=Object.assign({},c,{cmd:cmd,desc:desc,cat:cat,ref:ref,notes:notes,tags:tags,versions:versions}); return saved; });
     toast('✏️ Actualizado');
   } else {
-    db.commands.push({id:'c_'+Date.now(),cmd:cmd,desc:desc,cat:cat,ref:ref,notes:notes,tags:tags,versions:versions});
+    saved={id:'c_'+Date.now(),cmd:cmd,desc:desc,cat:cat,ref:ref,notes:notes,tags:tags,versions:versions};
+    db.commands.push(saved);
     toast('✅ Guardado');
   }
-  closeCmdModal(); currentCat=cat; buildNav(); renderSection(cat); saveToDrive();
+  closeCmdModal(); currentCat=cat; buildNav(); renderSection(cat); saveCommandDoc(saved);
 }
 function deleteCmd(cmdId) {
   var idx=db.commands.findIndex(function(c){return c.id===cmdId;});
   if(idx<0) return;
   var item=db.commands[idx];
   db.commands.splice(idx,1);
-  renderSection(currentCat); saveToDrive();
+  renderSection(currentCat); deleteCommandDoc(item.id);
   showUndo('🗑️ Comando eliminado', function(){
     db.commands.splice(Math.min(idx,db.commands.length),0,item);
-    renderSection(currentCat); saveToDrive(); toast('↩️ Comando restaurado');
+    renderSection(currentCat); saveCommandDoc(item); toast('↩️ Comando restaurado');
   });
 }
 function closeCmdModal(){document.getElementById('cmdModal').classList.remove('open');}
@@ -1209,8 +1247,9 @@ function saveCategory(){
   var icon=(document.getElementById('cat-icon').value||'').trim();
   if(!name){toast('⚠️ Nombre obligatorio');return;}
   var id='cat_'+Date.now();
-  db.categories.push({id:id,name:name,icon:icon||'📁'});
-  closeCatModal(); buildNav(); showCategory(id); saveToDrive(); toast('🗂️ "'+name+'" creada');
+  var cat={id:id,name:name,icon:icon||'📁'};
+  db.categories.push(cat);
+  closeCatModal(); buildNav(); showCategory(id); saveCategoryDoc(cat); toast('🗂️ "'+name+'" creada');
 }
 function openDelCatModal(catId){
   var cat=db.categories.find(function(c){return c.id===catId;});
@@ -1232,11 +1271,15 @@ function confirmDelCat(){
   closeDelCatModal(); buildNav();
   if(db.categories.length>0) showCategory(db.categories[0].id);
   else document.getElementById('sectionContent').innerHTML='';
-  saveToDrive();
+  deleteCategoryDoc(catId);
+  removedCmds.forEach(function(c){ deleteCommandDoc(c.id); });
   showUndo('🗑️ "'+cat.name+'" eliminada ('+removedCmds.length+' comandos)', function(){
     db.categories.splice(Math.min(catIdx,db.categories.length),0,cat);
     db.commands=db.commands.concat(removedCmds);
-    buildNav(); showCategory(cat.id); saveToDrive(); toast('↩️ Categoría restaurada');
+    buildNav(); showCategory(cat.id);
+    saveCategoryDoc(cat);
+    removedCmds.forEach(function(c){ saveCommandDoc(c); });
+    toast('↩️ Categoría restaurada');
   });
 }
 
@@ -1487,6 +1530,7 @@ function getAccesos() {
 }
 
 function showAccesos() {
+  activeSection='accesos';
   // Hide nav tabs active state
   document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById('searchResults').classList.remove('active');
@@ -1597,31 +1641,33 @@ function saveAcceso() {
   var notes = (document.getElementById('acceso-notes').value||'').trim();
   var group = document.getElementById('acceso-group').value;
   if (!name || !url) { toast('⚠️ Nombre y URL son obligatorios'); return; }
-  if (!db.accesos) db.accesos = JSON.parse(JSON.stringify(DEFAULT_ACCESOS));
+  if (!db.accesos) db.accesos = [];
   var id = document.getElementById('acceso-edit-id').value;
+  var saved;
   if (id) {
-    db.accesos = db.accesos.map(function(a){ return a.id===id ? Object.assign({},a,{name:name,url:url,icon:icon||'🌐',user:user,notes:notes,group:group}) : a; });
+    db.accesos = db.accesos.map(function(a){ if(a.id!==id) return a; saved=Object.assign({},a,{name:name,url:url,icon:icon||'🌐',user:user,notes:notes,group:group}); return saved; });
     toast('✏️ Acceso actualizado');
   } else {
-    db.accesos.push({ id:'acc_'+Date.now(), name:name, url:url, icon:icon||'🌐', user:user, notes:notes, group:group });
+    saved={ id:'acc_'+Date.now(), name:name, url:url, icon:icon||'🌐', user:user, notes:notes, group:group };
+    db.accesos.push(saved);
     toast('✅ Acceso guardado');
   }
   closeAccesoModal();
-  saveToDrive();
+  saveAccesoDoc(saved);
   showAccesos();
 }
 
 function deleteAcceso(id) {
-  if (!db.accesos) db.accesos = JSON.parse(JSON.stringify(DEFAULT_ACCESOS));
+  if (!db.accesos) db.accesos = [];
   var idx=db.accesos.findIndex(function(a){ return a.id === id; });
   if(idx<0) return;
   var item=db.accesos[idx];
   db.accesos.splice(idx,1);
-  saveToDrive();
+  deleteAccesoDoc(id);
   showAccesos();
   showUndo('🗑️ Acceso "'+item.name+'" eliminado', function(){
     db.accesos.splice(Math.min(idx,db.accesos.length),0,item);
-    saveToDrive(); showAccesos(); toast('↩️ Acceso restaurado');
+    saveAccesoDoc(item); showAccesos(); toast('↩️ Acceso restaurado');
   });
 }
 
@@ -1639,6 +1685,7 @@ var casoFilterCat = '', casoFilterTag = '';
 function setCasoFilterCat(v){ casoFilterCat = (casoFilterCat===v)?'':v; showCasos(); }
 function setCasoFilterTag(v){ casoFilterTag = (casoFilterTag===v)?'':v; showCasos(); }
 function showCasos() {
+  activeSection='casos';
   document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById('searchResults').classList.remove('active');
   document.getElementById('searchInput').value = '';
@@ -1799,15 +1846,17 @@ function saveCaso() {
   };
   if (!db.casos) db.casos = [];
   var id = document.getElementById('caso-edit-id').value;
+  var saved;
   if (id) {
-    db.casos = db.casos.map(function(c){ return c.id===id ? Object.assign({}, c, data, {updated: Date.now()}) : c; });
+    db.casos = db.casos.map(function(c){ if(c.id!==id) return c; saved=Object.assign({}, c, data, {updated: Date.now()}); return saved; });
     toast('✏️ Caso actualizado');
   } else {
-    db.casos.push(Object.assign({ id:'caso_'+Date.now(), created: Date.now() }, data));
+    saved=Object.assign({ id:'caso_'+Date.now(), created: Date.now() }, data);
+    db.casos.push(saved);
     toast('✅ Caso guardado');
   }
   closeCasoModal();
-  saveToDrive();
+  saveCasoDoc(saved);
   showCasos();
 }
 
@@ -1816,12 +1865,12 @@ function deleteCaso(id) {
   if(idx<0) return;
   var item=db.casos[idx];
   db.casos.splice(idx,1);
-  saveToDrive();
+  deleteCasoDoc(id);
   showCasos();
   var t=item.title.length>32?item.title.slice(0,32)+'…':item.title;
   showUndo('🗑️ Caso "'+t+'" eliminado', function(){
     db.casos.splice(Math.min(idx,db.casos.length),0,item);
-    saveToDrive(); showCasos(); toast('↩️ Caso restaurado');
+    saveCasoDoc(item); showCasos(); toast('↩️ Caso restaurado');
   });
 }
 
@@ -1839,7 +1888,7 @@ function bumpCopyCount(cmd){
   } catch(e){}
 }
 function openStatsModal(){
-  if(!db){ toast('⚠️ Conecta Drive primero', true); return; }
+  if(!db){ toast('⚠️ Conecta tu cuenta primero', true); return; }
   var html = '';
   var totCmd = db.commands.length, totCasos = (db.casos||[]).length, totAcc = (db.accesos||[]).length;
   html += '<div class="stats-tot">' +
@@ -2043,7 +2092,7 @@ function printCaso(id){
    RESPALDO / RESTAURAR
 ══════════════════════════════════════ */
 function downloadBackup(){
-  if(!db){ toast('⚠️ Conecta Drive primero', true); return; }
+  if(!db){ toast('⚠️ Conecta tu cuenta primero', true); return; }
   var blob = new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -2056,19 +2105,34 @@ function restoreBackup(ev){
   var file = ev.target.files[0];
   ev.target.value = '';
   if(!file) return;
-  if(!db || !accessToken){ toast('⚠️ Conecta Drive primero', true); return; }
+  if(!db || !fsAuth.currentUser){ toast('⚠️ Conecta tu cuenta primero', true); return; }
   var reader = new FileReader();
   reader.onload = function(e){
     var data;
     try { data = JSON.parse(e.target.result); } catch(err){ toast('❌ El archivo no es un respaldo válido', true); return; }
     if(!data || !data.categories || !data.commands){ toast('❌ El archivo no es un respaldo válido', true); return; }
-    if(!window.confirm('¿Restaurar este respaldo?\n\nSe reemplazará TODO el contenido actual ('+db.commands.length+' comandos) por el del respaldo ('+data.commands.length+' comandos).')) return;
-    db = data;
-    db.commands.forEach(function(c){ if(!c.tags)c.tags=[]; if(!c.versions)c.versions=[]; if(!c.notes)c.notes=''; });
-    if(!db.accesos) db.accesos = JSON.parse(JSON.stringify(DEFAULT_ACCESOS));
-    if(!db.casos) db.casos = [];
-    saveToDrive(); initApp();
-    toast('✅ Respaldo restaurado');
+    if(!window.confirm('¿Restaurar este respaldo?\n\nSe reemplazará TODO el contenido actual ('+db.commands.length+' comandos) por el del respaldo ('+data.commands.length+' comandos).\n\nEsto reescribe la base de datos en Firestore, puede tardar unos segundos.')) return;
+    data.commands.forEach(function(c){ if(!c.tags)c.tags=[]; if(!c.versions)c.versions=[]; if(!c.notes)c.notes=''; });
+    if(!data.accesos) data.accesos = [];
+    if(!data.casos) data.casos = [];
+    setSyncing(true);
+    Promise.all([
+      deleteAllInCollection('categories'), deleteAllInCollection('commands'),
+      deleteAllInCollection('accesos'),    deleteAllInCollection('casos')
+    ]).then(function(){
+      return Promise.all([
+        writeAllToCollection('categories', data.categories),
+        writeAllToCollection('commands',   data.commands),
+        writeAllToCollection('accesos',    data.accesos),
+        writeAllToCollection('casos',      data.casos)
+      ]);
+    }).then(function(){
+      setSyncing(false);
+      toast('✅ Respaldo restaurado');
+      // Los listeners de onSnapshot actualizan "db" y la vista solos.
+    }).catch(function(err){
+      setSyncing(false); toast('❌ Error al restaurar en Firestore', true); console.error(err);
+    });
   };
   reader.readAsText(file);
 }
@@ -2094,7 +2158,6 @@ function doUndo(){
 loadHistory();
 showScreen('notConnected');
 window.addEventListener('load', function(){
-  initGoogleAuth();
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('/cp-reference/sw.js').then(function(reg){
       // Check for updates every time page loads
