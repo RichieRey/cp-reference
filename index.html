@@ -443,6 +443,64 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-ui); m
 .menu-item.danger, .menu-item.danger .ico { color: var(--red); }
 .menu-sep { height: 1px; background: var(--border); margin: 5px 4px; }
 
+
+/* ══ REDISEÑO · LAYOUT ══ */
+.header { background: var(--navy-dark); padding: 10px 24px 12px; box-shadow: none; }
+.header-top { margin-bottom: 10px; gap: 16px; flex-wrap: nowrap; }
+.logo-module { font-size: 12px; }
+#appVer { font-size: 11px; color: rgba(255,255,255,0.4); align-self: center; }
+.sec-tabs { display: flex; gap: 2px; flex: 1; justify-content: center; }
+.sec-tab { display: flex; align-items: center; gap: 7px; padding: 7px 13px; border: none; background: transparent; color: rgba(255,255,255,0.65); font: inherit; font-size: 13px; font-weight: 500; border-radius: 8px; cursor: pointer; white-space: nowrap; transition: background 0.15s, color 0.15s; }
+.sec-tab:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.sec-tab.active { background: rgba(255,255,255,0.12); color: #fff; box-shadow: inset 0 -2px 0 var(--gold); }
+.header-controls { flex-wrap: nowrap; }
+#searchInput { font-family: var(--font-ui); font-size: 14px; }
+.main { max-width: 1280px; padding: 22px 24px; }
+.layout { display: grid; grid-template-columns: 210px minmax(0,1fr); gap: 28px; align-items: start; }
+body:not([data-sec="cat"]) .layout { grid-template-columns: minmax(0,1fr); }
+body:not([data-sec="cat"]) .side { display: none; }
+.side { position: sticky; top: calc(var(--hdr-h, 110px) + 16px); display: flex; flex-direction: column; gap: 1px; max-height: calc(100vh - var(--hdr-h, 110px) - 32px); overflow-y: auto; }
+.side-label { font-size: 11px; font-weight: 600; color: var(--muted); padding: 0 10px 6px; }
+.side-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 10px; border: none; background: transparent; color: var(--text-dim); font: inherit; font-size: 13px; border-radius: 7px; cursor: pointer; text-align: left; }
+.side-item:hover { background: var(--card-hover); color: var(--text); }
+.side-item.active { background: var(--gold-dim); color: var(--gold); font-weight: 600; }
+.side-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.side-count { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.side-item.active .side-count { color: var(--gold); }
+.side-add { color: var(--muted); margin-top: 6px; }
+.side-add:hover { color: var(--green); }
+.section-header { margin-bottom: 14px; }
+.section-actions { align-items: center; }
+.ver-pills { display: flex; gap: 4px; }
+.ver-pills .filter-pill { color: var(--text-dim); border-color: var(--border); font-size: 12px; padding: 4px 10px; }
+.ver-pills .filter-pill.version.active { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
+.view-btn { display: flex; align-items: center; padding: 6px 9px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; }
+.icon-act { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 7px; border: 1px solid transparent; background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.icon-act:hover { background: var(--card-hover); border-color: var(--border); color: var(--text); }
+.icon-act.danger:hover { color: var(--red); border-color: rgba(224,92,92,0.3); background: rgba(224,92,92,0.08); }
+.icon-act.copied { color: var(--green); }
+
+@media (max-width: 900px) {
+  .header-top { flex-wrap: wrap; }
+  .sec-tabs { order: 3; width: 100%; flex: none; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+  .sec-tabs::-webkit-scrollbar { display: none; }
+}
+@media (max-width: 768px) {
+  .header { padding: 10px 14px; }
+  #appVer { display: none; }
+  .main { padding: 14px 12px; }
+  .layout { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .side { position: static; flex-direction: row; overflow-x: auto; max-height: none; gap: 6px; padding-bottom: 4px; scrollbar-width: none; }
+  .side::-webkit-scrollbar { display: none; }
+  .side-label { display: none; }
+  .side-item { width: auto; flex-shrink: 0; border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; }
+  .side-item.active { border-color: var(--gold-border); }
+  .side-add { margin-top: 0; }
+  .section-actions { width: 100%; }
+  .ver-pills { flex: 1; overflow-x: auto; }
+}
+
 /* ══ REDISEÑO · TIPOGRAFÍA ══ */
 body { font-size: 14px; -webkit-font-smoothing: antialiased; }
 .cmd-text, .cmd-table td:first-child, .sk-id, .history-cmd, .caso-cmd-line code, .caso-evid, .kbd, .search-shortcut, #appVer, #cmd-input { font-family: var(--font-code); }
@@ -496,8 +554,14 @@ body { font-size: 14px; -webkit-font-smoothing: antialiased; }
       </div>
       <div class="logo-divider"></div>
       <div class="logo-module">Check Point <span>Reference</span></div>
-      <span id="appVer" style="font-size:10px;color:var(--muted,#8a97a8);font-family:Consolas,monospace;margin-left:8px;align-self:flex-end;padding-bottom:2px;"></span>
+      <span id="appVer"></span>
     </div>
+    <nav class="sec-tabs" id="secTabs" aria-label="Secciones">
+      <button class="sec-tab" data-sec="cat" onclick="goCommands()"><svg class="ico" aria-hidden="true"><use href="#i-terminal"/></svg><span>Comandos</span></button>
+      <button class="sec-tab" data-sec="casos" onclick="showCasos()"><svg class="ico" aria-hidden="true"><use href="#i-clipboard"/></svg><span>Casos</span></button>
+      <button class="sec-tab" data-sec="accesos" onclick="showAccesos()"><svg class="ico" aria-hidden="true"><use href="#i-link"/></svg><span>Accesos</span></button>
+      <button class="sec-tab" onclick="openCurso()" title="Abrir curso de estudio"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span>Curso</span></button>
+    </nav>
     <div class="header-controls">
       <div class="auth-status">
         <div class="auth-dot" id="authDot"></div>
@@ -528,24 +592,6 @@ body { font-size: 14px; -webkit-font-smoothing: antialiased; }
       <span class="search-shortcut">Ctrl+K</span>
     </div>
   </div>
-  <div class="filter-row" id="filterRow">
-    <span class="filter-label">Versión:</span>
-    <button class="filter-pill version active" data-ver="all" onclick="setVerFilter('all',this)">Todas</button>
-    <button class="filter-pill version" data-ver="R81.10" onclick="setVerFilter('R81.10',this)">R81.10</button>
-    <button class="filter-pill version" data-ver="R81.20" onclick="setVerFilter('R81.20',this)">R81.20</button>
-    <button class="filter-pill version" data-ver="R82" onclick="setVerFilter('R82',this)">R82</button>
-  </div>
-</div>
-
-<!-- ═══ NAV ═══ -->
-<div class="nav-wrap">
-  <div class="nav-tabs" id="navTabs"></div>
-  <div class="nav-actions">
-    <button class="nav-btn green" onclick="openCatModal()">＋ Categoría</button>
-    <button class="nav-btn" onclick="openCurso()" style="color:var(--gold);border-left:1px solid var(--border);" title="Abrir curso de estudio">📖 Curso</button>
-    <button class="nav-btn" onclick="showCasos()" style="color:var(--green);border-left:1px solid var(--border);" title="Bitácora de casos resueltos">📋 Casos</button>
-    <button class="nav-btn" onclick="showAccesos()" style="color:#7aaeff;border-left:1px solid var(--border);" title="Accesos rápidos">🚀 Accesos</button>
-  </div>
 </div>
 
 <!-- ═══ MAIN ═══ -->
@@ -562,8 +608,13 @@ body { font-size: 14px; -webkit-font-smoothing: antialiased; }
     <div class="state-desc">Sincronizando</div>
   </div>
   <div id="appContent">
-    <div class="search-results" id="searchResults"><div id="searchContent"></div></div>
-    <div id="sectionContent"></div>
+    <div class="layout">
+      <aside class="side" id="sideNav" aria-label="Categorías"></aside>
+      <div class="content">
+        <div class="search-results" id="searchResults"><div id="searchContent"></div></div>
+        <div id="sectionContent"></div>
+      </div>
+    </div>
   </div>
   <div class="footer"><span>SafeID SAS</span> · Seguridad de la Información · By Ricardo Arjona</div>
 </div>
@@ -806,6 +857,13 @@ var verFilter     = 'all';
 var currentTags   = [];
 var copyHistory   = [];
 var historyOpen   = false;
+
+function syncHeaderHeight() {
+  var h=document.querySelector('.header');
+  if(h) document.documentElement.style.setProperty('--hdr-h', h.offsetHeight+'px');
+}
+window.addEventListener('resize', syncHeaderHeight);
+window.addEventListener('load', syncHeaderHeight);
 
 /* ══════════════════════════════════════
    ÍCONOS Y MENÚ
@@ -1151,17 +1209,33 @@ function initApp() {
    NAV
 ══════════════════════════════════════ */
 function buildNav() {
-  var nav=document.getElementById('navTabs'); nav.innerHTML='';
+  var nav=document.getElementById('sideNav'); if(!nav||!db) return;
+  var counts={};
+  db.commands.forEach(function(c){ counts[c.cat]=(counts[c.cat]||0)+1; });
+  var html='<div class="side-label">Categorías</div>';
   db.categories.forEach(function(cat){
-    var btn=document.createElement('button'); btn.className='nav-tab'+(cat.id===currentCat?' active':'');
-    btn.textContent=(cat.icon?cat.icon+' ':'')+cat.name;
-    btn.onclick=function(){ showCategory(cat.id); }; nav.appendChild(btn);
+    html+='<button class="side-item'+(cat.id===currentCat&&activeSection==='cat'?' active':'')+'" data-cat="'+esc(cat.id)+'">'+
+      '<span class="side-name">'+esc(cat.name)+'</span><span class="side-count">'+(counts[cat.id]||0)+'</span></button>';
+  });
+  html+='<button class="side-item side-add" onclick="openCatModal()">'+ico('plus')+'<span class="side-name">Categoría</span></button>';
+  nav.innerHTML=html;
+  nav.querySelectorAll('.side-item[data-cat]').forEach(function(b){
+    b.onclick=function(){ showCategory(b.getAttribute('data-cat')); };
   });
 }
+function setSection(sec) {
+  activeSection=sec;
+  document.body.setAttribute('data-sec', sec);
+  document.querySelectorAll('.sec-tab').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-sec')===sec); });
+}
+function goCommands() {
+  if(!db||!db.categories.length) return;
+  var exists=db.categories.some(function(c){ return c.id===currentCat; });
+  showCategory(exists?currentCat:db.categories[0].id);
+}
 function showCategory(catId) {
-  activeSection='cat';
+  setSection('cat');
   currentCat=catId;
-  document.querySelectorAll('.nav-tab').forEach(function(t,i){ t.classList.toggle('active',db.categories[i]&&db.categories[i].id===catId); });
   document.getElementById('searchResults').classList.remove('active');
   document.getElementById('searchInput').value='';
   renderSection(catId);
@@ -1179,19 +1253,24 @@ function renderSection(catId) {
   var isSKs=catId==='sks';
   var isProtected=['quantum','tools','vpn','unix','maestro','identity','upgrade','sks'].indexOf(catId)>-1;
 
+  buildNav();
+  var verPills='<div class="ver-pills" role="group" aria-label="Versión">'+
+    [['all','Todas'],['R81.10','R81.10'],['R81.20','R81.20'],['R82','R82']].map(function(v){
+      return '<button class="filter-pill version'+(verFilter===v[0]?' active':'')+'" onclick="setVerFilter(\''+v[0]+'\',this)">'+v[1]+'</button>';
+    }).join('')+'</div>';
   var html='<div class="section-header">'+
     '<div class="section-header-left">'+
-      '<div class="section-icon">'+(cat.icon||'📁')+'</div>'+
       '<div><div class="section-title">'+esc(cat.name)+'</div>'+
-      '<div class="section-meta">'+cmds.length+(cmds.length!==allCmds.length?' / '+allCmds.length:'')+' comando(s)</div></div>'+
+      '<div class="section-meta">'+cmds.length+(cmds.length!==allCmds.length?' de '+allCmds.length:'')+' comando'+(cmds.length===1?'':'s')+'</div></div>'+
     '</div>'+
     '<div class="section-actions">'+
+      verPills+
       '<div class="view-toggle">'+
-        '<button class="view-btn'+(currentView==='card'?' active':'') +'" onclick="setView(\'card\')" title="Vista cards">▦</button>'+
-        '<button class="view-btn'+(currentView==='table'?' active':'')+'" onclick="setView(\'table\')" title="Vista tabla">☰</button>'+
+        '<button class="view-btn'+(currentView==='card'?' active':'') +'" onclick="setView(\'card\')" title="Vista lista" aria-label="Vista lista">'+ico('rows')+'</button>'+
+        '<button class="view-btn'+(currentView==='table'?' active':'')+'" onclick="setView(\'table\')" title="Vista tabla" aria-label="Vista tabla">'+ico('table')+'</button>'+
       '</div>'+
-      '<button class="btn btn-green" onclick="openAddCmdModal(\''+catId+'\')">➕ Agregar</button>'+
-      (!isProtected?'<button class="btn btn-red" onclick="openDelCatModal(\''+catId+'\')">🗑️</button>':'')+
+      '<button class="btn btn-green" onclick="openAddCmdModal(\''+catId+'\')">'+ico('plus')+' Agregar</button>'+
+      (!isProtected?'<button class="icon-act danger" onclick="openDelCatModal(\''+catId+'\')" title="Eliminar categoría" aria-label="Eliminar categoría">'+ico('trash')+'</button>':'')+
     '</div>'+
   '</div>';
 
@@ -1625,9 +1704,7 @@ function getAccesos() {
 }
 
 function showAccesos() {
-  activeSection='accesos';
-  // Hide nav tabs active state
-  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  setSection('accesos');
   document.getElementById('searchResults').classList.remove('active');
   document.getElementById('searchInput').value = '';
 
@@ -1780,8 +1857,7 @@ var casoFilterCat = '', casoFilterTag = '';
 function setCasoFilterCat(v){ casoFilterCat = (casoFilterCat===v)?'':v; showCasos(); }
 function setCasoFilterTag(v){ casoFilterTag = (casoFilterTag===v)?'':v; showCasos(); }
 function showCasos() {
-  activeSection='casos';
-  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  setSection('casos');
   document.getElementById('searchResults').classList.remove('active');
   document.getElementById('searchInput').value = '';
   currentCat = null;
